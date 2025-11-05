@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Project specific files
+# Добавил на всякий случай
+TMDB-kino.txt
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
