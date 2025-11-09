@@ -2,17 +2,23 @@
 // import './App.css'
 import styles from './App.module.css'
 import { Header } from './layout/header/Header'
-import { Main } from './layout/main/Main'
-
+import { MenuMain } from './layout/main/menumain/MenuMain'
+import { MenuCategoryMuvies } from './layout/main/menucategorymovies/MenuCategoryMovies'
 
 function App() {
   return (
     // Это основной блок - майн, на каждую кнопку должен быть свой
     <div className={styles.container}>
       <Header />
-      <Main />
-      <Rubric />
-      <Footer />
+      <MenuMain />
+      <MenuCategoryMuvies />
+
+      {/* 
+      
+      <MenuFavorites>
+        {/* фильмы отмеченные -  с красным сердечком (любимые) */}
+      {/* </MenuFavorites>
+      <Footer /> */}
     </div>
   )
 }

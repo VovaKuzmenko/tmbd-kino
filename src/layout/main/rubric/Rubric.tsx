@@ -1,6 +1,7 @@
 import styled from 'styled-components'
-import { FlexWrapper } from '../../components/FlexWrapper'
-import { MuviesHeaderRubric } from '../../components/title/Title'
+import { FlexWrapper } from '../../../components/FlexWrapper'
+import { MuviesHeaderRubric } from '../rubric/rubricheadermovies/RubricHeaderMovies'
+import { RubricFilms } from '../../../components/rubricfilms/RubricFilms'
 
 
 // тут название рубрики, и кнопка
@@ -10,12 +11,10 @@ export const Rubric = () => {
   return (
     <StyledRubric>
       <FlexWrapper>
-        <RubricMovies>
-          <MuviesHeaderRubric />
-          <RubricFilms />
-        </RubricMovies>
+        <MuviesHeaderRubric />
+        <RubricFilms />
       </FlexWrapper>
-    </StyledRubric>
+    </StyledRubric >
   )
 }
 
