@@ -1,17 +1,19 @@
 import styled from 'styled-components'
-import { FlexWrapper } from "../../components/FlexWrapper"
+import styles from './WelcomeBlock.module.css'
+// ./WelcomeBlock.module.css
+
+
 import { Search } from "../../components/search/Search"
 // import photo from "..."
 
 export const WelcomeBlock = () => {
   return (
     <StyledMain>
-      <FlexWrapper align={"center"} justify={"space-around"}>
-        <h2>WELCOME</h2>
-        <h1>Browse highlighted titles from TMDB</h1>
-        <Search />
-        <img src="" alt="картинка на весь экран" />
-      </FlexWrapper>
+
+      <h2>WELCOME</h2>
+      <h1>Browse highlighted titles from TMDB</h1>
+      <Search />
+      <img src="" alt="картинка на весь экран" />
     </StyledMain>
   )
 }

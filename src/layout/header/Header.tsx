@@ -2,6 +2,8 @@
 import { Logo } from '../../components/logo/Logo'
 import { Menu } from '../../components/menu/Menu'
 import styled from 'styled-components'
+import { ButtonDayNight } from './buttondaynight/ButtonDayNight'
+
 
 export const Header = () => {
   return (
@@ -9,7 +11,7 @@ export const Header = () => {
       {/* <StyledHeader> */}
       <Logo />
       <Menu />
-
+      <ButtonDayNight />
       {/* </StyledHeader> */}
     </StyledHeader>
   )

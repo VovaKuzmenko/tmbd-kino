@@ -1,0 +1,21 @@
+
+
+/*  даем какие-то общие стили */
+/* тексту еще стили порописать */
+
+/* .welcomeblock_container{
+
+} */
+
+
+h2 {
+  font-size: 4rem;
+  /* color: #333; */
+  /* flex-wrap: nowrap; */
+} 
+
+h1 {
+  font-size: 2rem;
+  /* color: #333; */
+  /* flex-wrap: nowrap; */
+} 
