@@ -1,4 +1,4 @@
-import { WelcomeBlock } from "../Main"
+import { WelcomeBlock } from "../WelcomeBlock"
 import { Rubric } from "../rubric/Rubric"
 
 
