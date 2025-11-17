@@ -3,7 +3,7 @@ import { FlexWrapper } from "../../components/FlexWrapper"
 import { Search } from "../../components/search/Search"
 // import photo from "..."
 
-export const Main = () => {
+export const WelcomeBlock = () => {
   return (
     <StyledMain>
       <FlexWrapper align={"center"} justify={"space-around"}>

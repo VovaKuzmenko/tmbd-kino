@@ -2,7 +2,7 @@ import { Button } from "../../../../components/button/Button"
 
 
 
-export const RubricButton = () => {
+export const RubricTabulation = () => {
   return (
     <div>
       <Button />

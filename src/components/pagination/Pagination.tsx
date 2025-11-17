@@ -3,7 +3,7 @@
 
 
 
-export const Pages = () => {
+export const Pagination = () => {
   return (
     <div>
       <div>1</div>

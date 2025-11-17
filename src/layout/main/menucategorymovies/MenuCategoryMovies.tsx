@@ -1,13 +1,13 @@
-import { RubricButton } from "./rubricbutton/RubricButton"
+import { RubricTabulation } from "./rubricbutton/RubricTabulation"
 import { Rubric } from "../rubric/Rubric"
-import { Pages } from "../../../components/pages/Pages"
+import { Pagination } from "../../../components/pagination/Pagination"
 
 export const MenuCategoryMuvies = () => {
   return (
     <div>
-      <RubricButton />
+      <RubricTabulation />
       <Rubric />
-      <Pages />
+      <Pagination />
     </div>
   )
 }

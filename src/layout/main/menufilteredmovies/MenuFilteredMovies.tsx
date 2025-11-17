@@ -1,6 +1,6 @@
 import { FlexWrapper } from "../../../components/FlexWrapper"
 import { Rubric } from "../rubric/Rubric"
-import { Pages } from "../../../components/pages/Pages"
+import { Pagination } from "../../../components/pagination/Pagination"
 import { FiltersSort } from "./filterssort/fFilterSort"
 
 export const MenuFilteredMovies = () => {
@@ -9,7 +9,7 @@ export const MenuFilteredMovies = () => {
       <FlexWrapper>
         <FiltersSort />
         <Rubric />
-        <Pages />
+        <Pagination />
       </FlexWrapper>
     </div>
   )

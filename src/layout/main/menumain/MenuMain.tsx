@@ -1,11 +1,11 @@
-import { Main } from "../Main"
+import { WelcomeBlock } from "../Main"
 import { Rubric } from "../rubric/Rubric"
 
 
 export const MenuMain = () => {
   return (
     <div>
-      <Main />
+      <WelcomeBlock />
       < Rubric />
       < Rubric />
       < Rubric />
