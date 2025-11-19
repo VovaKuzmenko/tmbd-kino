@@ -9,6 +9,24 @@ export const FiltersButton = () => {
     <div>
       {/* кнопки фильтрации */}
       <button>Вездесущая кнопка</button>
+      <button>Вездесущая кнопка</button>
+      <button>Вездесущая кнопка</button>
+      <button>Вездесущая кнопка</button>
+      <button>Вездесущая кнопка</button>
+      <button>Вездесущая кнопка</button>
+      <button>Вездесущая кнопка</button>
+      <button>Вездесущая кнопка</button>
+      <button>Вездесущая кнопка</button>
+      <button>Вездесущая кнопка</button>
+      <button>Вездесущая кнопка</button>
+      <button>Вездесущая кнопка</button>
+      <button>Вездесущая кнопка</button>
+      <button>Вездесущая кнопка</button>
+      <button>Вездесущая кнопка</button>
+      <button>Вездесущая кнопка</button>
+      <button>Вездесущая кнопка</button>
+      <button>Вездесущая кнопка</button>
+      <button>Вездесущая кнопка</button>
     </div>
   )
 }

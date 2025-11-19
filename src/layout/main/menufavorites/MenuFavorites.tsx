@@ -1,6 +1,6 @@
 import { FlexWrapper } from "../../../components/FlexWrapper"
 
-export const MenuSearch = () => {
+export const MenuFavorites = () => {
   return (
     <div>
       <FlexWrapper>

@@ -8,6 +8,8 @@ import { ResetFiltersButton } from "./resetfiltersbutton/ResetFiltersButton"
 export const FiltersSort = () => {
   return (
     <div>
+      {/* Ниже само название */}
+      <div>Filters / Sort</div>
       {/* Выпадающий список */}
       <DropList />
       {/* полоска рейтинга */}
