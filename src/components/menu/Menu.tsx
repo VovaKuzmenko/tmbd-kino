@@ -1,5 +1,6 @@
 
 import styled from 'styled-components'
+import { NavLink } from 'react-router'
 
 
 
@@ -7,11 +8,11 @@ export const Menu = () => {
   return (
     <StyledMenu>
       <ul>
-        <li><a href="">Main</a></li>
-        <li><a href="">Categori movies</a></li>
-        <li><a href="">Filtered movies</a></li>
-        <li><a href="">Search</a></li>
-        <li><a href="">Favorites</a></li>
+        <li><NavLink to='/'>Main</NavLink></li>
+        <li><NavLink to='/category'>Categori movies</NavLink></li>
+        <li><NavLink to='/filtered'>Filtered movies</NavLink></li>
+        <li><NavLink to='/search'>Search</NavLink></li>
+        <li><NavLink to='/favorites'>Favorites</NavLink></li>
       </ul>
     </StyledMenu>
 
