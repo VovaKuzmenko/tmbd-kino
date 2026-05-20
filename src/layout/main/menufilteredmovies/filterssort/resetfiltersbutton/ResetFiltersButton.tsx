@@ -7,7 +7,7 @@ export const ResetFiltersButton = () => {
   return (
     <div>
       {/* Супер кнопка */}
-      <button>Кнопка сброса</button>
+      <button className="button variantSecondary">Reset filters</button>
     </div>
   )
 }

@@ -15,6 +15,7 @@ dist-ssr
 # Project specific files
 # Добавил на всякий случай
 TMDB-kino.txt
+.env
 
 # Editor directories and files
 .vscode/*

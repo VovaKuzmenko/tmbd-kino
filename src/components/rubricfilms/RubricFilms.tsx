@@ -9,6 +9,7 @@ export const RubricFilms = () => {
     // тут как-то промепить фильмы и разместить их по 5 или по 6 штук
     <div className={styles['positional__properties']}>
       <Film />
+      {/* <Route path={PATHS.MAIN} element={<MenuMain />}  */}
       <Film />
       <Film />
       <Film />

@@ -8,9 +8,10 @@ import { MenuFilteredMovies } from './layout/main/menufilteredmovies/MenuFiltere
 import { MenuSearch } from './layout/main/menusearch/MenuSearch'
 import { MenuFavorites } from './layout/main/menufavorites/MenuFavorites'
 import { Footer } from './layout/footer/Footer'
-import { Navigate, Route, Routes } from 'react-router'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import { Error404 } from './components/error404/Error404'
-
+import { PATHS } from './constans/path'
+import { FilmInfo } from './layout/main/rubric/rubricfilms/FilmInfo'
 
 function App() {
   return (
@@ -18,15 +19,15 @@ function App() {
     <div className={styles.container}>
       <Header />
       <Routes>
-        <Route path='/' element={<MenuMain />} />
-        <Route path='/main' element={<MenuMain />} />
-        <Route path='/category' element={<MenuCategoryMuvies />} />
-        <Route path='/filtered' element={<MenuFilteredMovies />} />
-        <Route path='/search' element={<MenuSearch />} />
+        <Route path={PATHS.MAIN} element={<MenuMain />} />
+        <Route path={PATHS.CATEGORY} element={<MenuCategoryMuvies />} />
+        <Route path={PATHS.FILTERED} element={<MenuFilteredMovies />} />
+        <Route path={PATHS.SEARCH} element={<MenuSearch />} />
         {/* фильмы отмеченные -  с красным сердечком (любимые)  */}
-        <Route path='/favorites' element={<MenuFavorites />} />
-        <Route path='/404' element={<Error404 />} />
-        <Route path='*' element={<Navigate to="/404" />} />
+        <Route path={PATHS.FAVORITES} element={<MenuFavorites />} />
+        <Route path={PATHS.ERROR404} element={<Error404 />} />
+        <Route path={PATHS.FILM_INFO} element={<FilmInfo />} />
+        <Route path='*' element={<Navigate to={PATHS.ERROR404} />} />
       </Routes>
       <Footer />
     </div>
