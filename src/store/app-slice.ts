@@ -1,31 +1,13 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { buildCreateSlice, asyncThunkCreator } from '@reduxjs/toolkit';
 import type { BaseFilmResponse } from '../components/types/types.ts'
 import instance from "./../components/instance/instance"
 
+const createFilmSlice = buildCreateSlice({
+  creators: { asyncThunk: asyncThunkCreator },
+})
 
-fetchFilms: create.asyncThink(
-  async (_, { dispatch, rejectWithValue }) => {
-    try {
-      // dispatch(changeStatusAC({ status: 'loading' })) - передаем статус нашей крутилки при загрузке (не забыть убрать в компоненте)
-      // проверка на отсутствие загрузки наших фильмов - указано время
-      // await new Promise((resolve)=>setTimeout(resolve, 5000))
-      const response = await instance.get('/top_rated')
-      // dispatch(changeStatusAC({ status: 'succeeded' })) - успех запроса
-      return { films: response.data.results }
-    } catch (error) {
-      // dispatch(changeStatusAC({ status: 'failed' }))
-      return rejectWithValue(null)
-      // }, {
-      //   fulfilled: (state, action) => {
-      //! Переношу в экстра-редъюссер
-      // тут что выполниться в случае успеха - добавить сердечко
-      // В fulfilled ты записываешь и films, и filteredFilms.
-      // }
-    }
-  }
-)
 
-const filmSlice = createSlice({
+export const filmSlice = createFilmSlice({
   name: 'films',
   initialState: {
     films: [] as BaseFilmResponse[],
@@ -33,9 +15,7 @@ const filmSlice = createSlice({
     sortType: 'default' // потом прописать стили - типов сортировки
   },
 
-
-
-  reducers: {
+  reducers: (create) => ({
     // ! Реализовать логику в редьюссерах
     // 1. Реализовать поиск по названию фильма
 
@@ -93,47 +73,95 @@ const filmSlice = createSlice({
     // При нажатии в карточке фильма на кнопку "❤️ Любимые" фильм должен сохраниться в localStorage. При повторном нажатии в карточке фильма на кнопку "❤️ Любимые" фильм должен удалиться из localStorage.
     // Рекомендуем в localStorage хранить id, title, posterUrl, voteAverage
 
+    fetchFilms: create.asyncThunk(
+      async (_, { rejectWithValue }) => {
+        try {
+          // dispatch(changeStatusAC({ status: 'loading' })) - передаем статус нашей крутилки при загрузке (не забыть убрать в компоненте)
+          // проверка на отсутствие загрузки наших фильмов - указано время
+          // await new Promise((resolve)=>setTimeout(resolve, 5000))
+          const response = await instance.get('/top_rated')
+          // dispatch(changeStatusAC({ status: 'succeeded' })) - успех запроса
+          return { films: response.data.results }
+        } catch (error) {
+          // dispatch(changeStatusAC({ status: 'failed' }))
+          return rejectWithValue('Failed to load films')
+          // }, 
+          // ? Бллок возможной вставки -обработки сценариев
+          //        {
+          //   pending: (state) => {
+          //     state.status = 'loading'
+          //   },
+          //   fulfilled: (state, action) => {
+          //     state.status = 'succeeded'
+          //     state.films = action.payload
+          //     state.filteredFilms = action.payload
+          //   },
+          //   rejected: (state, action) => {
+          //     state.status = 'failed'
+          //     state.error = action.payload as string
+          //   },
+          // }
+          // ? -------------------------------------------
 
+          {
+            //   fulfilled: (state, action) => {
+            //! Переношу в экстра-редъюссер
+            // тут что выполниться в случае успеха - добавить сердечко
+            // В fulfilled ты записываешь и films, и filteredFilms.
+            // }
+          }
+        }
+      }),
 
-
-    let sortByPopularityIncrease = (state) => {
-      state.filteredFilms = [...state.films].sort((a, b) => b.popularity - a.popularity)
-    }
-
-let sortByPopularityDecrease = (state) => {
+    sortByPopularityIncrease: create.reducer((state) => {
       state.filteredFilms = [...state.films].sort((a, b) => a.popularity - b.popularity)
-    }
+    }),
 
-let sortByReleaseDateIncrease = (state) => {
-      state.filteredFilms = [...state.films].sort((a, b) => {
-        new Date(b.release_date).getTime() - new Date(a.release_date).getTime();
-      })
-    }
+    sortByPopularityDecrease: create.reducer((state) => {
+      state.filteredFilms = [...state.films].sort((a, b) => b.popularity - a.popularity)
+    }),
 
-let sortByReleaseDateDecrease = (state) => {
-      state.filteredFilms = [...state.films].sort((a, b) => {
+    sortByReleaseDateIncrease: create.reducer((state) => {
+      state.filteredFilms = [...state.films].sort((a, b) =>
         new Date(a.release_date).getTime() - new Date(b.release_date).getTime()
-      })
-    }
+      )
+    }),
 
-let sortByRaitingIncrease = (state) => {
-      state.filteredFilms = [...state.films].sort((a, b) => b.vote_average - a.vote_average)
-    }
+    sortByReleaseDateDecrease: create.reducer((state) => {
 
-let sortByRaitingDecrease = (state) => {
+      state.filteredFilms = [...state.films].sort((a, b) =>
+        new Date(b.release_date).getTime() - new Date(a.release_date).getTime()
+      )
+    }),
+
+    sortByRatingIncrease: create.reducer((state) => {
+      // state.sortType = 'rating-down'
       state.filteredFilms = [...state.films].sort((a, b) => a.vote_average - b.vote_average)
-    }
+    }),
 
-let sortByTitleIncrease = (state) => {
+    sortByRatingDecrease: create.reducer((state) => {
+      state.filteredFilms = [...state.films].sort((a, b) => b.vote_average - a.vote_average)
+
+    }),
+
+    sortByTitleIncrease: create.reducer((state) => {
       state.filteredFilms = [...state.films].sort((a, b) => a.original_title > b.original_title ? 1 : -1)
-    }
+    }),
 
-let sortByTitleDecrease = (state) => {
+    sortByTitleDecrease: create.reducer((state) => {
       state.filteredFilms = [...state.films].sort((a, b) => a.original_title < b.original_title ? 1 : -1)
-    }
-  }
+    })
+
+  })
 
 })
+
+
+
+export const { sortByPopularityIncrease, sortByPopularityDecrease, sortByReleaseDateIncrease, sortByReleaseDateDecrease, sortByRatingIncrease, sortByRatingDecrease, sortByTitleIncrease, sortByTitleDecrease, fetchFilms } = filmSlice.actions
+export const filmReducerSort = filmSlice.reducer //? - для подключения в store
+
+
 //* Логикак поиска, основные методы без жанра, с массивом полученных фильмов */
 //*********************************** */
 // let movies = {

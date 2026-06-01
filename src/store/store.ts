@@ -1,12 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit"
-import { appReducer, appSlice } from "./app-slice.ts"
+import { filmReducerSort, filmSlice } from "./app-slice.ts"
 
 
 
 
 export const store = configureStore({
   reducer: {
-    film: filmReducer, // возможно стоит сделать так: [filmSlice.name]: filmReducer, - от чего это зависит ?
+    [filmSlice.name]: filmReducerSort
   }
 })
 

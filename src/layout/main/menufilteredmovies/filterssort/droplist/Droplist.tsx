@@ -1,10 +1,11 @@
-import { useAppDispatch } from '../../../../../../src/'
-import { ChangeEvent } from 'react'
+
+import type { AppDispatch } from "./../../../../../store/store"
+import { useDispatch } from 'react-redux'
 import {
   sortByPopularityDecrease,
   sortByPopularityIncrease,
-  sortByVoteAverageDecrease,
-  sortByVoteAverageIncrease,
+  sortByRatingIncrease,
+  sortByRatingDecrease,
   sortByReleaseDateDecrease,
   sortByReleaseDateIncrease,
   sortByTitleIncrease,
@@ -13,9 +14,9 @@ import {
 
 
 export const DropList = () => {
-  const dispatch = useAppDispatch()
+  const dispatch = useDispatch<AppDispatch>()
 
-  const handleSortChange = (e: ChangeEvent<HTMLSelectElement>) => {
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     switch (e.target.value) {
       case 'popularityDecrease':
         dispatch(sortByPopularityDecrease())
@@ -23,11 +24,11 @@ export const DropList = () => {
       case 'popularityIncrease':
         dispatch(sortByPopularityIncrease())
         break
-      case 'vote_averageDecrease':
-        dispatch(sortByVoteAverageDecrease())
+      case 'ratingDecrease':
+        dispatch(sortByRatingDecrease())
         break
-      case 'vote_averageIncrease':
-        dispatch(sortByVoteAverageIncrease())
+      case 'ratingIncrease':
+        dispatch(sortByRatingIncrease())
         break
       case 'primary_release_dateDecrease':
         dispatch(sortByReleaseDateDecrease())
@@ -44,21 +45,22 @@ export const DropList = () => {
       default:
         break
     }
-
-    return (
-      <div>
-        {/* Выпадающий список непосредственно */}
-
-        <select className="sortSelect" onChange={handleSortChange}>
-          <option value="popularityDecrease" >Popularity ↓</option>
-          <option value="popularityIncrease">Popularity ↑</option>
-          <option value="vote_averageDecrease">Rating ↓</option>
-          <option value="vote_averageIncrease">Rating ↑</option>
-          <option value="primary_release_dateDecrease">Release Date ↓</option>
-          <option value="primary_release_dateIncrease">Release Date ↑</option>
-          <option value="original_titleIncrease">Title A-Z</option>
-          <option value="original_titleDecrease">Title Z-A</option>
-        </select>
-      </div>
-    )
   }
+
+  return (
+    <div>
+      {/* Выпадающий список непосредственно */}
+
+      <select className="sortSelect" onChange={handleSortChange}>
+        <option value="popularityDecrease" >Popularity ↓</option>
+        <option value="popularityIncrease">Popularity ↑</option>
+        <option value="ratingDecrease">Rating ↓</option>
+        <option value="ratingIncrease">Rating ↑</option>
+        <option value="primary_release_dateDecrease">Release Date ↓</option>
+        <option value="primary_release_dateIncrease">Release Date ↑</option>
+        <option value="original_titleIncrease">Title A-Z</option>
+        <option value="original_titleDecrease">Title Z-A</option>
+      </select>
+    </div>
+  )
+}
