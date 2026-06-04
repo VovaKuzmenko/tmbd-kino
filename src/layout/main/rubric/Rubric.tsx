@@ -4,6 +4,9 @@ import axios from "axios"
 import instance from "./../../../components/instance/instance"
 // import { createRoot } from "react-dom/client"
 import React, { useEffect } from "react"
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchFilms } from './../../../store/app-slice'
+import type { AppDispatch, RootState } from "./../../../store/store"
 
 import styled from 'styled-components'
 import styles from './rubric.module.css'
@@ -34,9 +37,11 @@ import type { BaseFilmResponse, Error } from './../../../components/types'
 
 
 export const Rubric = () => {
+  const dispatch = useDispatch<AppDispatch>()
 
-  const [movies, setMovies] = React.useState<BaseFilmResponse[] | null>(null)
-  const [error, setError] = React.useState<Error | null>(null)
+  const movies = useSelector((state: RootState) => state.films.filteredFilms)
+  const status = useSelector((state: RootState) => state.films.status)
+  const error = useSelector((state: RootState) => state.films.error)
 
 
   // useEffect(() => {
@@ -58,29 +63,15 @@ export const Rubric = () => {
   //     }
   //   }
   //   fetchMovies()
+
   // }, [])
   useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        const response = await instance.get('/top_rated')
+    dispatch(fetchFilms())
+  }, [dispatch])
 
-        setMovies(response.data.results)
-        console.log(response.data)
-      } catch (error) {
-        console.error('Детали ошибки:', error)
-        setError(error)
-      } finally {
-      }
-    }
-    fetchMovies()
-  }, [])
-
-  if (error) return (<div>
-    <div>Ошибка: {error.code}</div>
-    <div>Ошибка: {error.message}</div>
-    <div>Ошибка: {error.name}</div>
-  </div>)
-
+  { status === 'loading' && <div>loading...</div> }
+  { error && <div>Ошибка: {error}</div> }
+  { status === 'succeeded' && movies.length === 0 && <div>No movies</div> }
 
   return (
     <FlexWrapper>

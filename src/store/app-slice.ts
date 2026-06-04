@@ -12,106 +12,39 @@ export const filmSlice = createFilmSlice({
   initialState: {
     films: [] as BaseFilmResponse[],
     filteredFilms: [] as BaseFilmResponse[],
-    sortType: 'default' // потом прописать стили - типов сортировки
+    status: 'idle' as 'idle' | 'loading' | 'succeeded' | 'failed',
+    error: null as string | null,
+    sortType: 'default' as string // потом прописать стили - типов сортировки
   },
 
   reducers: (create) => ({
-    // ! Реализовать логику в редьюссерах
-    // 1. Реализовать поиск по названию фильма
-
-    // 2. Поиск фильмов по категориям:
-    // ? По идее одна функция, куда я запихиваю одну из текущих категорий
-    // 2.1. Популярные фильмы(Popular Movies) - посмотреть где эта категория лежит после прихода с сервера
-    // 2.2. По высокому рейтингу(Top Rated Movies) - это тот который в кружечке, тоже приходит с сервера
-    // 2.3. Предстоящие фильмы (Upcoming Movies)
-    // 2.4 Сейчас идущие фильмы (Now Playing Movies)
-    // ? По нажатии на кнопку должен меняться URL. Это значит, что если ты  нажал на кнопку Top Rated и потом перегрузил страницу, то должен остаться в категории Top Rated
-    // ? Кнопка активной страницы должна быть визуально выделена, чтобы пользователь видел, что сейчас выбрано
-    // ? Внизу должна быть реализована пагинация или бесконечный скролл (на выбор)
-
-    // Filtered Movies Page блок фильтрации и сортировки слево 
-    // https://developer.themoviedb.org/reference/discover-movie - документация
-    // 6.1.1. Сортировка (sort_by)
-
-    //     По популярности (убывание)
-    //     По популярности (возрастание)
-    //     По рейтингу (убывание)
-    //     По рейтингу (возрастание)
-    //     По дате выпуска (убывание)
-    //     По дате выпуска (возрастание)
-    //     По названию (А-Я)
-    //     По названию (Я-А)
-
-    // 6.1.2. Фильтрация по рейтингу (vote_average.gte / vote_average.lte)
-
-    //     Показывай фильмы с рейтингом от 0 до 10 с шагом 0.1
-    //     Реализуй debounce с задержкой в 200 мс, чтобы при движении ползунка не улетала 100 запросов
-
-    // 6.1.3. Фильтрация по жанрам (with_genres)
-    // https://developer.themoviedb.org/reference/genre-movie-list
-    // Отрисуй кнопки с жанрами фильмов, при нажатии на которые фильмы должны фильтроваться
-    // Фильтровать фильмы можно по нескольким жанрам одновременно, то есть можно одновременно выбрать несколько жанров
-
-    // 6.1.4. Сброс фильтров
-    // Реализуй кнопку сброса фильтров, при нажатии на которую сортировки и жанры откатываются к первоначальному состоянию
-
-    // 6.2. Блок результатов
-
-
-    // Страница поиска фильма (Search Page)
-
-    /*  Search Page — страница поиска фильмов по названию
-
-    Вводишь название фильма, нажимаешь кнопку Search и должен увидеть карточки фильмов, удовлетворяющих введенному названию
-    Если название фильма не введено, то ты должен увидеть об этом надпись. Например: "Enter a movie title to start searching"
-    Если фильма с таким названием не существует, то ты должен увидеть об этом надпись. Например: "No matches found for "ыыыыыы""
-    При нажатии на крестик (<input type="search">), результат должен сброситься в первоначальное состояние
-    Внизу должна быть реализована пагинация или бесконечный скролл (на выбор)*/
-
-
-    // Страница "Любимые фильмы" (Favorites Page)
-    // При нажатии в карточке фильма на кнопку "❤️ Любимые" фильм должен сохраниться в localStorage. При повторном нажатии в карточке фильма на кнопку "❤️ Любимые" фильм должен удалиться из localStorage.
-    // Рекомендуем в localStorage хранить id, title, posterUrl, voteAverage
-
     fetchFilms: create.asyncThunk(
       async (_, { rejectWithValue }) => {
         try {
-          // dispatch(changeStatusAC({ status: 'loading' })) - передаем статус нашей крутилки при загрузке (не забыть убрать в компоненте)
-          // проверка на отсутствие загрузки наших фильмов - указано время
-          // await new Promise((resolve)=>setTimeout(resolve, 5000))
-          const response = await instance.get('/top_rated')
-          // dispatch(changeStatusAC({ status: 'succeeded' })) - успех запроса
-          return { films: response.data.results }
-        } catch (error) {
-          // dispatch(changeStatusAC({ status: 'failed' }))
-          return rejectWithValue('Failed to load films')
-          // }, 
-          // ? Бллок возможной вставки -обработки сценариев
-          //        {
-          //   pending: (state) => {
-          //     state.status = 'loading'
-          //   },
-          //   fulfilled: (state, action) => {
-          //     state.status = 'succeeded'
-          //     state.films = action.payload
-          //     state.filteredFilms = action.payload
-          //   },
-          //   rejected: (state, action) => {
-          //     state.status = 'failed'
-          //     state.error = action.payload as string
-          //   },
-          // }
-          // ? -------------------------------------------
 
-          {
-            //   fulfilled: (state, action) => {
-            //! Переношу в экстра-редъюссер
-            // тут что выполниться в случае успеха - добавить сердечко
-            // В fulfilled ты записываешь и films, и filteredFilms.
-            // }
-          }
+          const response = await instance.get('/top_rated')
+          return response.data.results
+        } catch (error) {
+          return rejectWithValue('Failed to load films')
         }
-      }),
+      },
+      // ? Бллок обработки сценариев
+      {
+        pending: (state) => {
+          state.status = 'loading'
+          state.error = null
+        },
+        fulfilled: (state, action) => {
+          state.status = 'succeeded'
+          state.films = action.payload
+          state.filteredFilms = action.payload
+        },
+        rejected: (state, action) => {
+          state.status = 'failed'
+          state.error = action.payload as string
+        },
+      }
+    ),
 
     sortByPopularityIncrease: create.reducer((state) => {
       state.filteredFilms = [...state.films].sort((a, b) => a.popularity - b.popularity)
@@ -151,9 +84,7 @@ export const filmSlice = createFilmSlice({
     sortByTitleDecrease: create.reducer((state) => {
       state.filteredFilms = [...state.films].sort((a, b) => a.original_title < b.original_title ? 1 : -1)
     })
-
   })
-
 })
 
 

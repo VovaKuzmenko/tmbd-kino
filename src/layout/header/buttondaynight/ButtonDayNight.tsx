@@ -4,7 +4,7 @@
 export const ButtonDayNight = () => {
   return (
     <div>
-      <img src="" alt="DayNight" />
+      <img src={null} alt="DayNight" />
     </div >
   )
 }
