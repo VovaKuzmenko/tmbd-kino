@@ -209,7 +209,7 @@ export const Rubric = () => {
                 <b>{m.title}</b>
                 ,<p>{m.overview}</p>
                 <p>⭐ {m.popularity} </p>
-                {/* <img src={m.backdrop_path} alt="No poster" /> */}
+                <img src={'https://image.tmdb.org/t/p/original' + m.backdrop_path} alt={m.title} />
 
               </div>
             )

@@ -1,5 +1,4 @@
 
-
 import axios from "axios"
 import instance from "./../../../components/instance/instance"
 // import { createRoot } from "react-dom/client"
@@ -86,13 +85,13 @@ export const Rubric = () => {
           {movies === null && (<div>loading</div>)}
           {movies?.length === 0 && (<div>No movies</div>)}
 
-          {movies?.map((m) => {
+          {movies?.slice(0, 6).map((m) => {
             return (
               <div key={m.id}>
                 <b>{m.title}</b>
                 ,<p>{m.overview}</p>
                 <p>⭐ {m.popularity} </p>
-                {/* <img src={m.backdrop_path} alt="No poster" /> */}
+                <img src={"https://image.tmdb.org/t/p/original" + m.poster_path} alt="No poster" style={{ width: 200, height: 300 }} />
 
               </div>
             )

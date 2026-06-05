@@ -23,6 +23,7 @@ export const filmSlice = createFilmSlice({
         try {
 
           const response = await instance.get('/top_rated')
+          console.log(response.data.results)
           return response.data.results
         } catch (error) {
           return rejectWithValue('Failed to load films')
