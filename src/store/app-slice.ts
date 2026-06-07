@@ -1,10 +1,11 @@
 import { buildCreateSlice, asyncThunkCreator } from '@reduxjs/toolkit';
-import type { BaseFilmResponse } from '../components/types/types.ts'
+import type { BaseFilmResponse, FilmCategory } from '../components/types/types.ts'
 import instance from "./../components/instance/instance"
 
 const createFilmSlice = buildCreateSlice({
   creators: { asyncThunk: asyncThunkCreator },
 })
+
 
 
 export const filmSlice = createFilmSlice({
@@ -14,38 +15,58 @@ export const filmSlice = createFilmSlice({
     filteredFilms: [] as BaseFilmResponse[],
     status: 'idle' as 'idle' | 'loading' | 'succeeded' | 'failed',
     error: null as string | null,
+    FilmCategory: 'popular' as FilmCategory,
     sortType: 'default' as string // потом прописать стили - типов сортировки
   },
 
   reducers: (create) => ({
-    fetchFilms: create.asyncThunk(
-      async (_, { rejectWithValue }) => {
-        try {
+    // Типизация thunk через дженерики, чтобы:
+    // category был FilmCategory
+    // action.meta.arg тоже был FilmCategory
+    // action.payload в fulfilled был правильного типа
+    //     Почему это исправляет:
+    // У thunk явно задан тип аргумента FilmCategory.
+    // Поэтому action.meta.arg больше не unknown.
+    // У payload в fulfilled тоже корректный тип, без ручных кастов.
+    fetchFilms: create.asyncThunk<{ category: FilmCategory; results: BaseFilmResponse[] }, FilmCategory,
+      { rejectValue: string }>(
+        async (category, { rejectWithValue }) => {
+          try {
 
-          const response = await instance.get('/top_rated')
-          console.log(response.data.results)
-          return response.data.results
-        } catch (error) {
-          return rejectWithValue('Failed to load films')
+            const response = await instance.get(`/${category}`)
+            console.log(response.data.results)
+            return { category, results: response.data.results }
+          } catch (error) {
+            return rejectWithValue(`Failed to load films for ${category}`)
+          }
+        },
+        // ? Бллок обработки сценариев
+        {
+          // const category = action.meta.arg
+          // В pending и rejected у тебя еще нет данных payload с фильмами, но уже нужно понять, для какой рубрики поставить loading или error.
+          // Через action.meta.arg ты узнаешь, какую именно ветку state обновлять: popular, top_rated, upcoming или now_playing.
+          // const category = action.meta.arg - эта строка связывает конкретный запрос с конкретной рубрикой в state.
+          pending: (state, action) => {
+            const category = action.meta.arg
+            state.status = 'loading'
+            state.error = null
+            state.FilmCategory = category
+          },
+          fulfilled: (state, action) => {
+            const { category, results } = action.payload
+            state.status = 'succeeded'
+            state.FilmCategory = category
+            state.films = results
+            state.filteredFilms = results
+          },
+          rejected: (state, action) => {
+            const category = action.meta.arg
+            state.status = 'failed'
+            state.FilmCategory = category
+            state.error = action.payload as string
+          },
         }
-      },
-      // ? Бллок обработки сценариев
-      {
-        pending: (state) => {
-          state.status = 'loading'
-          state.error = null
-        },
-        fulfilled: (state, action) => {
-          state.status = 'succeeded'
-          state.films = action.payload
-          state.filteredFilms = action.payload
-        },
-        rejected: (state, action) => {
-          state.status = 'failed'
-          state.error = action.payload as string
-        },
-      }
-    ),
+      ),
 
     sortByPopularityIncrease: create.reducer((state) => {
       state.filteredFilms = [...state.films].sort((a, b) => a.popularity - b.popularity)

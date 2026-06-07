@@ -1,6 +1,6 @@
 
 import axios from "axios"
-import instance from "./../../../components/instance/instance"
+import IMG_BASE_URL from "./../../../components/instance/instance"
 // import { createRoot } from "react-dom/client"
 import React, { useEffect } from "react"
 import { useDispatch, useSelector } from 'react-redux'
@@ -12,7 +12,7 @@ import styles from './rubric.module.css'
 import { FlexWrapper } from '../../../components/FlexWrapper'
 import { MuviesHeaderRubric } from '../rubric/rubricheadermovies/RubricHeaderMovies'
 import { RubricFilms } from '../../../components/rubricfilms/RubricFilms'
-import type { BaseFilmResponse, Error } from './../../../components/types'
+import type { BaseFilmResponse, Error, FilmCategory } from './../../../components/types'
 
 // import { Film } from './../../../components/film/Film'
 
@@ -31,11 +31,14 @@ import type { BaseFilmResponse, Error } from './../../../components/types'
     При нажатии на фильм пользователя должно перекинуть на отдельную страницу с фильмом, где он увидит расширенную информацию о фильме смотри 
      */}
 
+type RubricProps = {
+  title: string
+  category: FilmCategory
+}
 
 
 
-
-export const Rubric = () => {
+export const Rubric = ({ title, category }: RubricProps) => {
   const dispatch = useDispatch<AppDispatch>()
 
   const movies = useSelector((state: RootState) => state.films.filteredFilms)
@@ -65,8 +68,8 @@ export const Rubric = () => {
 
   // }, [])
   useEffect(() => {
-    dispatch(fetchFilms())
-  }, [dispatch])
+    dispatch(fetchFilms(category))
+  }, [dispatch, category])
 
   { status === 'loading' && <div>loading...</div> }
   { error && <div>Ошибка: {error}</div> }
@@ -80,7 +83,7 @@ export const Rubric = () => {
       </StyledRubric >
 
       <div style={{ width: "45%" }}>
-        <h2>🎦 Films</h2>
+        <h2>{title}</h2>
         <div>
           {movies === null && (<div>loading</div>)}
           {movies?.length === 0 && (<div>No movies</div>)}
@@ -91,8 +94,7 @@ export const Rubric = () => {
                 <b>{m.title}</b>
                 ,<p>{m.overview}</p>
                 <p>⭐ {m.popularity} </p>
-                <img src={"https://image.tmdb.org/t/p/original" + m.poster_path} alt="No poster" style={{ width: 200, height: 300 }} />
-
+                <img src={`https://image.tmdb.org/t/p/original${m.poster_path}`} alt="No poster" style={{ width: 200, height: 300 }} />
               </div>
             )
           })}

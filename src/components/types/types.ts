@@ -26,6 +26,7 @@ export type Error = {
   name: boolean;
 }
 
+export type FilmCategory = 'popular' | 'top_rated' | 'upcoming' | 'now_playing'
 // -------------------------------------------/
 // filmInfo.js
 // -------------------------------------------/
