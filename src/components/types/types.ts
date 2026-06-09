@@ -26,7 +26,14 @@ export type Error = {
   name: boolean;
 }
 
+// ИЗ App.js
+// --------------------------------------*/
 export type FilmCategory = 'popular' | 'top_rated' | 'upcoming' | 'now_playing'
+
+export type RubricItem = {
+  title: string
+  category: FilmCategory
+}
 // -------------------------------------------/
 // filmInfo.js
 // -------------------------------------------/

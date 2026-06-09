@@ -12,6 +12,15 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { Error404 } from './components/error404/Error404'
 import { PATHS } from './constans/path'
 import { FilmInfo } from './layout/main/rubric/rubricfilms/FilmInfo'
+import type { FilmCategory } from "../src/components/types"
+
+
+const rubrics: Array<{ title: string; category: FilmCategory }> = [
+  { title: 'Popular Movies', category: 'popular' },
+  { title: 'Top Rated Movies', category: 'top_rated' },
+  { title: 'Upcoming Movies', category: 'upcoming' },
+  { title: 'Now Playing Movies', category: 'now_playing' },
+]
 
 function App() {
   return (
@@ -19,8 +28,10 @@ function App() {
     <div className={styles.container}>
       <Header />
       <Routes>
-        <Route path={PATHS.MAIN} element={<MenuMain />} />
-        <Route path={PATHS.CATEGORY} element={<MenuCategoryMuvies />} />
+        <Route path={PATHS.MAIN} element={<MenuMain
+          rubrics={rubrics}
+        />} />
+        <Route path={PATHS.CATEGORY} element={<MenuCategoryMuvies rubrics={rubrics} />} />
         <Route path={PATHS.FILTERED} element={<MenuFilteredMovies />} />
         <Route path={PATHS.SEARCH} element={<MenuSearch />} />
         {/* фильмы отмеченные -  с красным сердечком (любимые)  */}
