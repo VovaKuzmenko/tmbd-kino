@@ -14,6 +14,7 @@ import { MuviesHeaderRubric } from '../rubric/rubricheadermovies/RubricHeaderMov
 import { RubricFilms } from '../../../components/rubricfilms/RubricFilms'
 import type { BaseFilmResponse, Error, FilmCategory } from './../../../components/types'
 
+
 // import { Film } from './../../../components/film/Film'
 
 
@@ -78,7 +79,7 @@ export const Rubric = ({ title, category }: RubricProps) => {
   return (
     <FlexWrapper>
       <StyledRubric className={styles['StyledRubric']}>
-        <MuviesHeaderRubric />
+        <MuviesHeaderRubric title={title} />
         <RubricFilms />
       </StyledRubric >
 

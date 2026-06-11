@@ -1,4 +1,8 @@
 
+import type { FilmCategory } from '../types/types.ts'
+import { useDispatch } from 'react-redux'
+import type { AppDispatch } from '../../store/store.ts'
+import { fetchFilms } from "../../store/app-slice"
 
 
 
@@ -13,18 +17,16 @@
 // ]
 
 type ButtonProps = {
-  key: string
   title: string
-  category: string
+  category: FilmCategory
 }
 
-const HanddlerButtonCategory = {
+export const Button = ({ title, category }: ButtonProps) => {
+  const dispatch = useDispatch<AppDispatch>()
 
-}
-
-
-
-export const Button = ({ key, title, category }: ButtonProps) => {
+  const HanddlerButtonCategory = () => {
+    dispatch(fetchFilms(category))
+  }
   return (
     <div>
       <button onClick={HanddlerButtonCategory}>{title}</button>
