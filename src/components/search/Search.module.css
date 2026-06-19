@@ -15,9 +15,12 @@
 	width: 100%;
 	font-size: 20px;
 	flex: 1 1 auto;
+
+  color: #111827;
+  caret-color: #111827;
 }
 .form-main-block__input::placeholder{
-	color: rgba(49, 53, 59, 0.3);
+	color: rgba(17, 24, 39, 0.45);
 }
 .form-main-block__button {
 	height: 50px;
@@ -33,9 +36,21 @@
 	padding: 5px 15px;
 	transition: all 0.3s ease 0s;
 	background-color: #2563eb;
-  opacity: .6;
+
+   /* Активная кнопка по умолчанию */
+border: none;
+cursor: pointer;
+  opacity: 1;
 }
-.form-main-block__button:hover {
-	background-color: #1d4ed8;
+
+.form-main-block__button:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+/* Неактивное состояние только когда disabled=true */
+.form-main-block__button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  background-color: #93c5fd;
 }
 
