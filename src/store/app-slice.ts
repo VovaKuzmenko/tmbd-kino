@@ -1,4 +1,4 @@
-import { buildCreateSlice, asyncThunkCreator } from '@reduxjs/toolkit';
+import { buildCreateSlice, asyncThunkCreator, type PayloadAction } from '@reduxjs/toolkit';
 import type { BaseFilmResponse, FilmCategory } from '../components/types/types.ts'
 import instance from "./../components/instance/instance"
 
@@ -13,6 +13,7 @@ export const filmSlice = createFilmSlice({
   initialState: {
     films: [] as BaseFilmResponse[],
     filteredFilms: [] as BaseFilmResponse[],
+    favorites: [] as BaseFilmResponse[], //!
     status: 'idle' as 'idle' | 'loading' | 'succeeded' | 'failed',
     error: null as string | null,
     FilmCategory: 'popular' as FilmCategory,
@@ -40,12 +41,13 @@ export const filmSlice = createFilmSlice({
             return rejectWithValue(`Failed to load films for ${category}`)
           }
         },
-        // ? Бллок обработки сценариев
+        // ? Бллок обработки сценариев и загрузки данных
         {
           // const category = action.meta.arg
           // В pending и rejected у тебя еще нет данных payload с фильмами, но уже нужно понять, для какой рубрики поставить loading или error.
           // Через action.meta.arg ты узнаешь, какую именно ветку state обновлять: popular, top_rated, upcoming или now_playing.
           // const category = action.meta.arg - эта строка связывает конкретный запрос с конкретной рубрикой в state.
+          // 
           pending: (state, action) => {
             const category = action.meta.arg
             state.status = 'loading'
@@ -68,6 +70,7 @@ export const filmSlice = createFilmSlice({
         }
       ),
 
+    // ? Блок сортировок и фильтрации
     sortByPopularityIncrease: create.reducer((state) => {
       state.filteredFilms = [...state.films].sort((a, b) => a.popularity - b.popularity)
     }),
@@ -105,13 +108,42 @@ export const filmSlice = createFilmSlice({
 
     sortByTitleDecrease: create.reducer((state) => {
       state.filteredFilms = [...state.films].sort((a, b) => a.original_title < b.original_title ? 1 : -1)
+    }),
+
+    // ? Блок favorites (любимые фильмы)
+    // !
+    toggleFavorite: create.reducer((state, action: PayloadAction<BaseFilmResponse>) => {
+      // PayloadAction — это тип из @reduxjs/toolkit. Его нужно импортировать.
+      // PayloadAction<BaseFilmResponse> — это тип, который говорит:
+      // "action имеет поле payload, и в этом payload находится объект типа BaseFilmResponse".
+      // Благодаря этому типу TypeScript понимает, что action.payload имеет все поля фильма (id, title, poster_path и т.д.), и дает тебе автодополнение.      
+      const movieIndex = state.favorites.findIndex((movie) => movie.id === action.payload.id)
+
+      if (movieIndex === -1) {
+        // Фильм не в избранном, добавляем
+        state.favorites.push(action.payload)
+      } else {
+        // Фильм уже в избранном, удаляем
+        state.favorites.splice(movieIndex, 1)
+      }
+    }),
+    // !
+    removeFavoriteById: create.reducer((state, action: PayloadAction<number>) => {
+      state.favorites = state.favorites.filter((movie) => movie.id !== action.payload)
+    }),
+    // !
+    clearFavorites: create.reducer((state) => {
+      state.favorites = []
     })
+
   })
 })
 
 
 
-export const { sortByPopularityIncrease, sortByPopularityDecrease, sortByReleaseDateIncrease, sortByReleaseDateDecrease, sortByRatingIncrease, sortByRatingDecrease, sortByTitleIncrease, sortByTitleDecrease, fetchFilms } = filmSlice.actions
+export const { sortByPopularityIncrease, sortByPopularityDecrease, sortByReleaseDateIncrease, sortByReleaseDateDecrease, sortByRatingIncrease, sortByRatingDecrease, sortByTitleIncrease, sortByTitleDecrease, fetchFilms, toggleFavorite,
+  removeFavoriteById,
+  clearFavorites } = filmSlice.actions
 export const filmReducerSort = filmSlice.reducer //? - для подключения в store
 
 
