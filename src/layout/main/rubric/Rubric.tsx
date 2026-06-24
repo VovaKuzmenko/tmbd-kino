@@ -1,8 +1,5 @@
 
-import axios from "axios"
-import IMG_BASE_URL from "./../../../components/instance/instance"
-// import { createRoot } from "react-dom/client"
-import React, { useEffect } from "react"
+import { useEffect } from "react"
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchFilms } from './../../../store/app-slice'
 import type { AppDispatch, RootState } from "./../../../store/store"
@@ -12,32 +9,12 @@ import styles from './rubric.module.css'
 import { FlexWrapper } from '../../../components/FlexWrapper'
 import { MuviesHeaderRubric } from '../rubric/rubricheadermovies/RubricHeaderMovies'
 import { RubricFilms } from '../../../components/rubricfilms/RubricFilms'
-import type { BaseFilmResponse, Error, FilmCategory } from './../../../components/types'
-
-
-// import { Film } from './../../../components/film/Film'
-
-
-// тут название рубрики, и кнопка
-// 6 картинок - внизу рецтинг (виден постоянно),  в верху при наведении появляется сердечко в кружочке, которое можно отметить как любимый фильм (подсветка кружочка при наведении и изменение цвета кружочка при клике)
-
-
-// todo  начальный блок - как должно быть без картинок, чисто рыба
-{/* Карточка фильма должна содержать:
-
-    Постер фильма
-    Название фильма
-    Рейтинг (с визуальным индикатором, например, цветной badge)
-    Кнопку "❤️ Любимые" для добавления в избранное
-    При нажатии на фильм пользователя должно перекинуть на отдельную страницу с фильмом, где он увидит расширенную информацию о фильме смотри 
-     */}
+import type { FilmCategory } from './../../../components/types'
 
 type RubricProps = {
   title: string
   category: FilmCategory
 }
-
-
 
 export const Rubric = ({ title, category }: RubricProps) => {
   const dispatch = useDispatch<AppDispatch>()
@@ -47,60 +24,19 @@ export const Rubric = ({ title, category }: RubricProps) => {
   const error = useSelector((state: RootState) => state.films.error)
 
 
-  // useEffect(() => {
-  //   const fetchMovies = async () => {
-  //     try {
-  //       const response = await axios.get('https://api.themoviedb.org/3/movie/top_rated', {
-  //         params: {
-  //           api_key: import.meta.env.VITE_API_KEY,
-  //           language: 'ru-RU',
-  //           page: 1
-  //         }
-  //       })
-  //       setMovies(response.data.results)
-  //       console.log(response.data)
-  //     } catch (error) {
-  //       console.error('Детали ошибки:', error)
-  //       setError(error)
-  //     } finally {
-  //     }
-  //   }
-  //   fetchMovies()
-
-  // }, [])
   useEffect(() => {
     dispatch(fetchFilms(category))
   }, [dispatch, category])
-
-  { status === 'loading' && <div>loading...</div> }
-  { error && <div>Ошибка: {error}</div> }
-  { status === 'succeeded' && movies.length === 0 && <div>No movies</div> }
 
   return (
     <FlexWrapper>
       <StyledRubric className={styles['StyledRubric']}>
         <MuviesHeaderRubric title={title} />
-        <RubricFilms />
+        {status === 'loading' && <div>loading...</div>}
+        {error && <div>Ошибка: {error}</div>}
+        {status === 'succeeded' && movies.length === 0 && <div>No movies</div>}
+        {status === 'succeeded' && movies.length > 0 && <RubricFilms movies={movies.slice(0, 6)} />}
       </StyledRubric >
-
-      <div style={{ width: "45%" }}>
-        <h2>{title}</h2>
-        <div>
-          {movies === null && (<div>loading</div>)}
-          {movies?.length === 0 && (<div>No movies</div>)}
-
-          {movies?.slice(0, 6).map((m) => {
-            return (
-              <div key={m.id}>
-                <b>{m.title}</b>
-                ,<p>{m.overview}</p>
-                <p>⭐ {m.popularity} </p>
-                <img src={`https://image.tmdb.org/t/p/original${m.poster_path}`} alt="No poster" style={{ width: 200, height: 300 }} />
-              </div>
-            )
-          })}
-        </div>
-      </div>
     </FlexWrapper>
   )
 }

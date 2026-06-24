@@ -1,23 +1,32 @@
-import styled from "styled-components"
+import { useDispatch, useSelector } from 'react-redux'
 import { Film } from "../film/Film"
-styled
 import styles from './rubricfilm.module.css'
 
+import { toggleFavorite } from '../../store/app-slice'
+import type { AppDispatch, RootState } from '../../store/store'
+import type { BaseFilmResponse } from '../types'
 
-export const RubricFilms = () => {
+type RubricFilmsProps = {
+  movies: BaseFilmResponse[]
+}
+
+export const RubricFilms = ({ movies }: RubricFilmsProps) => {
+  const dispatch = useDispatch<AppDispatch>()
+  const favorites = useSelector((state: RootState) => state.films.favorites)
   return (
-    // тут как-то промепить фильмы и разместить их по 5 или по 6 штук
     <div className={styles['positional__properties']}>
-      <Film />
-      {/* <Route path={PATHS.MAIN} element={<MenuMain />}  */}
-      <Film />
-      <Film />
-      <Film />
-      <Film />
+      {movies.map((movie) => {
+        const isFavorite = favorites.some((favoriteMovie) => favoriteMovie.id === movie.id)
+
+        return (
+          <Film
+            key={movie.id}
+            movie={movie}
+            isFavorite={isFavorite}
+            onToggleFavorite={() => dispatch(toggleFavorite(movie))}
+          />
+        )
+      })}
     </div>
   )
 }
-
-// const RubricFilms = styled.section`
-
-// `
