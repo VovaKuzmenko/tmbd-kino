@@ -17,7 +17,7 @@ import type { FilmCategory } from "../src/components/types"
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import type { RootState } from './store/store'
-import { toggleTheme } from './store/app-slice'
+// import { toggleTheme } from './store/app-slice'
 
 
 const rubrics: Array<{ title: string; category: FilmCategory }> = [
@@ -38,11 +38,6 @@ function App() {
 
     // Это основной блок - майн, на каждую кнопку должен быть свой
     <div className={styles.container}>
-      {/* Для проверки переключения темы */}
-      <button onClick={() => dispatch(toggleTheme())}>
-        Theme: {theme}
-
-      </button>
       <Header />
       <Routes>
         <Route path={PATHS.MAIN} element={<MenuMain
