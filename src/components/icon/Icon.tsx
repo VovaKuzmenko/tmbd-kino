@@ -8,17 +8,11 @@ type IconPropsType = {
   width?: string
   height?: string
   viewBox?: string
+  className?: string
 }
 
-
-
-
-export const Icon = (props: IconPropsType) => {
+export const Icon = () => {
   return (
-    <div>
-      {/* тут значения из пропсов */}
-      {/* <svg width={...}... /> */}
-      {/* <use XLiunkHref={`${iconSprite}#${props.id}`} /> */}
-    </div>
+    <div></div>
   )
 }
