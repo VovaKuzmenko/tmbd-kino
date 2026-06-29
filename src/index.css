@@ -66,3 +66,14 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+ /* Для проверки переключения темы */ 
+body[data-theme='light'] {
+background: #f5f7fb;
+color: #111827;
+}
+
+body[data-theme='dark'] {
+background: #0f172a;
+color: #e2e8f0;
+}

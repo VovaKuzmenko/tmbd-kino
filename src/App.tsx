@@ -13,6 +13,11 @@ import { Error404 } from './components/error404/Error404'
 import { PATHS } from './constans/path'
 import { FilmInfo } from './layout/main/rubric/rubricfilms/FilmInfo'
 import type { FilmCategory } from "../src/components/types"
+// Для визуального переключения темы
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import type { RootState } from './store/store'
+import { toggleTheme } from './store/app-slice'
 
 
 const rubrics: Array<{ title: string; category: FilmCategory }> = [
@@ -23,9 +28,21 @@ const rubrics: Array<{ title: string; category: FilmCategory }> = [
 ]
 
 function App() {
+  const dispatch = useDispatch()
+  const theme = useSelector((state: RootState) => state.films.theme)
+
+  useEffect(() => {
+    document.body.setAttribute('data-theme', theme)
+  }, [theme])
   return (
+
     // Это основной блок - майн, на каждую кнопку должен быть свой
     <div className={styles.container}>
+      {/* Для проверки переключения темы */}
+      <button onClick={() => dispatch(toggleTheme())}>
+        Theme: {theme}
+
+      </button>
       <Header />
       <Routes>
         <Route path={PATHS.MAIN} element={<MenuMain

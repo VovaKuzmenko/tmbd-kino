@@ -1,16 +1,18 @@
 import { buildCreateSlice, asyncThunkCreator, type PayloadAction } from '@reduxjs/toolkit';
 import type { BaseFilmResponse, FilmCategory } from '../components/types/types.ts'
 import instance from "./../components/instance/instance"
+export type ThemeMode = 'light' | 'dark'
 
 
 const createFilmSlice = buildCreateSlice({
   creators: { asyncThunk: asyncThunkCreator },
 })
 
-// !
-const FAVORITES_KEY = 'tmdb_favorites'
 
-// !
+const FAVORITES_KEY = 'tmdb_favorites'
+const THEME_KEY = 'tmdb_theme'
+
+
 const loadFavorites = (): BaseFilmResponse[] => {
   if (typeof window === 'undefined') return []
   try {
@@ -21,11 +23,30 @@ const loadFavorites = (): BaseFilmResponse[] => {
   }
 }
 
-// !
 const saveFavorites = (favorites: BaseFilmResponse[]) => {
   if (typeof window === 'undefined') return
   try {
     localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites))
+  } catch {
+  }
+}
+
+// ThemeMode-хелпер
+const loadTheme = (): ThemeMode => {
+  if (typeof window === 'undefined') return 'light'
+  try {
+    const raw = localStorage.getItem(THEME_KEY)
+    return raw === 'dark' ? 'dark' : 'light'
+  } catch {
+    return 'light'
+  }
+}
+
+// ThemeMode-хелпер
+const saveTheme = (theme: ThemeMode) => {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.setItem(THEME_KEY, theme)
   } catch {
   }
 }
@@ -35,25 +56,16 @@ export const filmSlice = createFilmSlice({
   initialState: {
     films: [] as BaseFilmResponse[],
     filteredFilms: [] as BaseFilmResponse[],
-    // favorites: [] as BaseFilmResponse[], //!
-    // !
-    // Для чтения favorites при старте, в initialState ставим вызов загрузки.
     favorites: loadFavorites(),
     status: 'idle' as 'idle' | 'loading' | 'succeeded' | 'failed',
     error: null as string | null,
     FilmCategory: 'popular' as FilmCategory,
-    sortType: 'default' as string // потом прописать стили - типов сортировки
+    sortType: 'default' as string,
+    theme: loadTheme()
   },
 
   reducers: (create) => ({
-    // Типизация thunk через дженерики, чтобы:
-    // category был FilmCategory
-    // action.meta.arg тоже был FilmCategory
-    // action.payload в fulfilled был правильного типа
-    //     Почему это исправляет:
-    // У thunk явно задан тип аргумента FilmCategory.
-    // Поэтому action.meta.arg больше не unknown.
-    // У payload в fulfilled тоже корректный тип, без ручных кастов.
+
     fetchFilms: create.asyncThunk<{ category: FilmCategory; results: BaseFilmResponse[] }, FilmCategory,
       { rejectValue: string }>(
         async (category, { rejectWithValue }) => {
@@ -66,7 +78,7 @@ export const filmSlice = createFilmSlice({
             return rejectWithValue(`Failed to load films for ${category}`)
           }
         },
-        // ? Бллок обработки сценариев и загрузки данных
+        // ? Блок обработки сценариев и загрузки данных
         {
           pending: (state, action) => {
             const category = action.meta.arg
@@ -138,25 +150,28 @@ export const filmSlice = createFilmSlice({
       } else {
         state.favorites.splice(movieIndex, 1)
       }
-      // !
+
       saveFavorites(state.favorites)
     }),
     removeFavoriteById: create.reducer((state, action: PayloadAction<number>) => {
       state.favorites = state.favorites.filter((movie) => movie.id !== action.payload)
-      // !
+
       saveFavorites(state.favorites)
     }),
     clearFavorites: create.reducer((state) => {
       state.favorites = []
-      // !
+
       saveFavorites(state.favorites)
-    })
+    }),
+    //  toggleTheme - добавлено переключение темы
+    toggleTheme: create.reducer((state) => {
+      state.theme = state.theme === 'light' ? 'dark' : 'light'
+      saveTheme(state.theme)
+    }),
   })
 })
 
-export const { sortByPopularityIncrease, sortByPopularityDecrease, sortByReleaseDateIncrease, sortByReleaseDateDecrease, sortByRatingIncrease, sortByRatingDecrease, sortByTitleIncrease, sortByTitleDecrease, fetchFilms, toggleFavorite,
-  removeFavoriteById,
-  clearFavorites } = filmSlice.actions
+export const { sortByPopularityIncrease, sortByPopularityDecrease, sortByReleaseDateIncrease, sortByReleaseDateDecrease, sortByRatingIncrease, sortByRatingDecrease, sortByTitleIncrease, sortByTitleDecrease, fetchFilms, toggleFavorite, removeFavoriteById, clearFavorites, toggleTheme } = filmSlice.actions
 export const filmReducerSort = filmSlice.reducer
 
 
