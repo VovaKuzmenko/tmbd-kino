@@ -17,8 +17,11 @@ export const Header = () => {
   )
 }
 
+// перенести в отдельный ЦСС модуль
 const StyledHeader = styled.header`
-backround-color: #d4ffd3;
+position: sticky;
+  top: 0;
+  z-index: 1000;
 display:flex;
 justify-content:space-between;
 `
