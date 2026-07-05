@@ -1,0 +1,25 @@
+[33mbc0187d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m fix:footer-to the bottom, header-to the top
+[33m290f3bb[m feat: add switching the theme to an element ButtonDayNight
+[33m9054070[m add button Day-Night on Main App
+[33m0bee2d6[m feat: add logo TDMB in Header
+[33med540af[m fix: card Film, refactor: displaying movies
+[33m279bdff[m add saveFavorites and loadFavorites in localStorage
+[33m3f1e47d[m feat: add reducers toggleFavorite, removeFavoriteById, clearFavorites to work with favorites
+[33m73ac099[m feat: add search implementation without requirements
+[33m81985e2[m fix: The movie category was not displayed visually in 'Category Movies'
+[33mfad2717[m feat: add array rubrics in App, displayed it in MenuCategoryMuvies
+[33m49c2f5a[m feat:add rubrics and their APIs
+[33m772ec6a[m feat: style and URL poster_path
+[33m7b966c1[m docs:deleting unnecessary comments
+[33m83f7150[m good deal redusers
+[33m95ce6ee[m Add old logic file
+[33md578397[m Added menu navigation, added a query to Rubric
+[33m8f317c7[m add components and styles
+[33mba4ff3c[m added styles for the main menu
+[33m074d78f[m fix change right name
+[33m5ce93f3[m fix change name components Maine>WelcomeBlock?
+[33mae2bb3d[m feat: base stucture progect
+[33mc1be68c[m feat: split the main page into components
+[33m07f0e18[m style: create of Heasder  elements
+[33m9ff212e[m chore add React Router, Redux Toolkit
+[33m31bbc1b[m Initial commit
