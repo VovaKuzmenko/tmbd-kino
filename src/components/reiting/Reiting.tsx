@@ -8,7 +8,7 @@ const getBadgeColor = (rating: number) => {
   return "#ef4444"
 }
 
-export const Reiting = ({ value }: ReitingProps) => {
+export const Reiting = ({ value = 0 }: ReitingProps) => {
   const formattedRating = Number(value.toFixed(1))
 
   return (

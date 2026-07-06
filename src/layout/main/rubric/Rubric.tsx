@@ -13,7 +13,7 @@ import type { FilmCategory } from './../../../components/types'
 
 type RubricProps = {
   title: string
-  category: FilmCategory
+  category?: FilmCategory
 }
 
 export const Rubric = ({ title, category }: RubricProps) => {
@@ -25,6 +25,8 @@ export const Rubric = ({ title, category }: RubricProps) => {
 
 
   useEffect(() => {
+    if (!category) return
+
     dispatch(fetchFilms(category))
   }, [dispatch, category])
 
@@ -32,10 +34,10 @@ export const Rubric = ({ title, category }: RubricProps) => {
     <FlexWrapper>
       <StyledRubric className={styles['StyledRubric']}>
         <MuviesHeaderRubric title={title} />
-        {status === 'loading' && <div>loading...</div>}
-        {error && <div>Ошибка: {error}</div>}
-        {status === 'succeeded' && movies.length === 0 && <div>No movies</div>}
-        {status === 'succeeded' && movies.length > 0 && <RubricFilms movies={movies.slice(0, 6)} />}
+        {category && status === 'loading' && <div>loading...</div>}
+        {category && error && <div>Ошибка: {error}</div>}
+        {movies.length === 0 && <div>No movies</div>}
+        {movies.length > 0 && <RubricFilms movies={movies.slice(0, 6)} />}
       </StyledRubric >
     </FlexWrapper>
   )

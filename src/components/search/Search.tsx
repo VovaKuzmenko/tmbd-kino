@@ -3,10 +3,10 @@ import type { FormEvent } from 'react'
 
 type SearchProps = {
   value?: string
-  onChange?: (value: string) => void
-  onSubmit?: () => void
+  onChange: (value: string) => void
+  onSubmit: () => void
   isLoading?: boolean
-  onClear?: () => void
+  onClear: () => void
 }
 
 export const Search = ({
@@ -23,12 +23,12 @@ export const Search = ({
     event.preventDefault()
 
     if (isDisabled) return
-    onSubmit()
+    onSubmit?.()
   }
 
   const handleChange = (nextValue: string) => {
-    onChange(nextValue)
-    if (nextValue === '') onClear()
+    onChange?.(nextValue)
+    if (nextValue === '') onClear?.()
   }
 
 

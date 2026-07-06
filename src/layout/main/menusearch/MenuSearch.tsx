@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import axios from 'axios'
 import { Search } from '../../../components/search/Search'
 import type { BaseFilmResponse } from '../../../components/types'
@@ -12,12 +13,16 @@ type SearchResponse = {
 }
 
 export const MenuSearch = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
+
   const [query, setQuery] = useState('')
   const [searchedQuery, setSearchedQuery] = useState('')
   const [movies, setMovies] = useState<BaseFilmResponse[]>([])
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+
+  const queryFromUrl = (searchParams.get('q') ?? '').trim()
 
   const resetSearchState = () => {
     setSearchedQuery('')
@@ -27,7 +32,7 @@ export const MenuSearch = () => {
     setTotalPages(1)
   }
 
-  const fetchMovies = async (searchValue: string, targetPage: number) => {
+  const fetchMovies = useCallback(async (searchValue: string, targetPage: number) => {
     setStatus('loading')
 
     try {
@@ -49,7 +54,19 @@ export const MenuSearch = () => {
       setMovies([])
       setStatus('error')
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    setQuery(queryFromUrl)
+
+    if (!queryFromUrl) {
+      resetSearchState()
+      return
+    }
+
+    setSearchedQuery(queryFromUrl)
+    void fetchMovies(queryFromUrl, 1)
+  }, [queryFromUrl, fetchMovies])
 
   const handlePageChange = async (nextPage: number) => {
     if (nextPage < 1 || nextPage > totalPages || nextPage === page) return
@@ -57,8 +74,7 @@ export const MenuSearch = () => {
   }
 
   const handleInputClear = () => {
-    setQuery('')
-    resetSearchState()
+    setSearchParams({})
   }
 
 
@@ -67,12 +83,16 @@ export const MenuSearch = () => {
     const normalizedQuery = query.trim()
 
     if (!normalizedQuery) {
-      resetSearchState()
+      setSearchParams({})
       return
     }
 
-    setSearchedQuery(normalizedQuery)
-    await fetchMovies(normalizedQuery, 1)
+    if (normalizedQuery === queryFromUrl) {
+      await fetchMovies(normalizedQuery, 1)
+      return
+    }
+
+    setSearchParams({ q: normalizedQuery })
   }
 
   const canGoPrev = page > 1
@@ -132,7 +152,7 @@ export const MenuSearch = () => {
               type="button"
               className={styles.pageButton}
               onClick={() => handlePageChange(page - 1)}
-            // disabled={!canGoPrev || status === 'loading'}
+              disabled={!canGoPrev}
             >
               Prev
             </button>
@@ -145,7 +165,7 @@ export const MenuSearch = () => {
               type="button"
               className={styles.pageButton}
               onClick={() => handlePageChange(page + 1)}
-            // disabled={!canGoNext || status === 'loading'}
+              disabled={!canGoNext}
             >
               Next
             </button>

@@ -8,12 +8,9 @@ import styles from './MenuFilteredMovies.module.css'
 export const MenuFilteredMovies = () => {
   return (
     <div className={styles['MenuFilteredMovies__positional__properties']}>
-      {/* Тут подумать как задать пропорциональные размеры для флексов */}
       <FiltersSort />
-      {/* <ObertkaDlaFlexa> */}
-      <Rubric />
+      <Rubric title="Filtered Movies" />
       <Pagination />
-      {/* </ObertkaDlaFlexa> */}
     </div>
   )
 }

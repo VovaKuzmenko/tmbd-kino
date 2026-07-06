@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
+import { useNavigate } from 'react-router-dom'
 import styles from './WelcomeBlock.module.css'
-// ./WelcomeBlock.module.css
-import { Search } from "../../components/search/Search"
-import instance, { IMG_BASE_URL } from "../../components/instance/instance"
-import type { BaseFilmResponse } from "../../components/types"
-// import photo from "..."
+import { Search } from '../../components/search/Search'
+import instance, { IMG_BASE_URL } from '../../components/instance/instance'
+import type { BaseFilmResponse } from '../../components/types'
+import { PATHS } from '../../constans/path'
 
 type PopularResponse = {
   results: BaseFilmResponse[]
@@ -13,6 +13,8 @@ type PopularResponse = {
 
 export const WelcomeBlock = () => {
   const [heroImage, setHeroImage] = useState<string>('')
+  const [query, setQuery] = useState('')
+  const navigate = useNavigate()
 
   useEffect(() => {
     const loadRandomPopularHero = async () => {
@@ -42,16 +44,33 @@ export const WelcomeBlock = () => {
     loadRandomPopularHero()
   }, [])
 
-  return (
+  const handleSubmit = () => {
+    const normalizedQuery = query.trim()
+    if (!normalizedQuery) return
 
+    navigate(`${PATHS.SEARCH}?q=${encodeURIComponent(normalizedQuery)}`)
+  }
+
+  const handleClear = () => {
+    setQuery('')
+  }
+
+  return (
     <StyledMain className={styles.StyledMain}>
       <div className={styles.imageLayer} >
         {heroImage && <img src={heroImage} alt="картинка на весь экран" />}
       </div>
+
       <div className={styles.content}>
         <h2>WELCOME</h2>
         <h1>Browse highlighted titles from TMDB</h1>
-        <Search />
+
+        <Search
+          value={query}
+          onChange={setQuery}
+          onSubmit={handleSubmit}
+          onClear={handleClear}
+        />
       </div>
     </StyledMain>
   )
