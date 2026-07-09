@@ -1,0 +1,24 @@
+.buttonsWrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.genreButton {
+  border: none;
+  outline: none;
+  box-shadow: none;
+  transition: box-shadow 0.15s ease;
+}
+
+.genreButton:focus,
+.genreButton:focus-visible,
+.genreButton:active {
+  outline: none;
+  box-shadow: none;
+  border: none;
+}
+
+.genreButtonActive {
+  box-shadow: 0 0 0 2px #22c55e !important;;
+}

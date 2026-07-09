@@ -1,17 +1,38 @@
-import { buildCreateSlice, asyncThunkCreator, type PayloadAction } from '@reduxjs/toolkit';
+import { buildCreateSlice, asyncThunkCreator, type PayloadAction } from '@reduxjs/toolkit'
 import type { BaseFilmResponse, FilmCategory } from '../components/types/types.ts'
-import instance from "./../components/instance/instance"
+import instance from './../components/instance/instance'
+
 export type ThemeMode = 'light' | 'dark'
 
+type SortType =
+  | 'default'
+  | 'popularityIncrease'
+  | 'popularityDecrease'
+  | 'ratingIncrease'
+  | 'ratingDecrease'
+  | 'releaseDateIncrease'
+  | 'releaseDateDecrease'
+  | 'titleIncrease'
+  | 'titleDecrease'
+
+type FilmsState = {
+  films: BaseFilmResponse[]
+  filteredFilms: BaseFilmResponse[]
+  favorites: BaseFilmResponse[]
+  status: 'idle' | 'loading' | 'succeeded' | 'failed'
+  error: string | null
+  FilmCategory: FilmCategory
+  sortType: SortType
+  selectedGenres: number[]
+  theme: ThemeMode
+}
 
 const createFilmSlice = buildCreateSlice({
   creators: { asyncThunk: asyncThunkCreator },
 })
 
-
 const FAVORITES_KEY = 'tmdb_favorites'
 const THEME_KEY = 'tmdb_theme'
-
 
 const loadFavorites = (): BaseFilmResponse[] => {
   if (typeof window === 'undefined') return []
@@ -31,7 +52,6 @@ const saveFavorites = (favorites: BaseFilmResponse[]) => {
   }
 }
 
-// ThemeMode-хелпер
 const loadTheme = (): ThemeMode => {
   if (typeof window === 'undefined') return 'light'
   try {
@@ -42,7 +62,6 @@ const loadTheme = (): ThemeMode => {
   }
 }
 
-// ThemeMode-хелпер
 const saveTheme = (theme: ThemeMode) => {
   if (typeof window === 'undefined') return
   try {
@@ -51,98 +70,156 @@ const saveTheme = (theme: ThemeMode) => {
   }
 }
 
+const sortMovies = (movies: BaseFilmResponse[], sortType: SortType): BaseFilmResponse[] => {
+  const arr = [...movies]
+
+  switch (sortType) {
+    case 'popularityIncrease':
+      return arr.sort((a, b) => a.popularity - b.popularity)
+    case 'popularityDecrease':
+      return arr.sort((a, b) => b.popularity - a.popularity)
+    case 'ratingIncrease':
+      return arr.sort((a, b) => a.vote_average - b.vote_average)
+    case 'ratingDecrease':
+      return arr.sort((a, b) => b.vote_average - a.vote_average)
+    case 'releaseDateIncrease':
+      return arr.sort(
+        (a, b) => new Date(a.release_date).getTime() - new Date(b.release_date).getTime()
+      )
+    case 'releaseDateDecrease':
+      return arr.sort(
+        (a, b) => new Date(b.release_date).getTime() - new Date(a.release_date).getTime()
+      )
+    case 'titleIncrease':
+      return arr.sort((a, b) => (a.original_title > b.original_title ? 1 : -1))
+    case 'titleDecrease':
+      return arr.sort((a, b) => (a.original_title < b.original_title ? 1 : -1))
+    default:
+      return arr
+  }
+}
+
+const applyFiltersAndSort = (state: FilmsState) => {
+  const filteredByGenres =
+    state.selectedGenres.length === 0
+      ? state.films
+      : state.films.filter((movie) =>
+        state.selectedGenres.every((genreId) => movie.genre_ids.includes(genreId))
+      )
+
+  state.filteredFilms = sortMovies(filteredByGenres, state.sortType)
+}
+
+const initialState: FilmsState = {
+  films: [],
+  filteredFilms: [],
+  favorites: loadFavorites(),
+  status: 'idle',
+  error: null,
+  FilmCategory: 'popular',
+  sortType: 'default',
+  selectedGenres: [],
+  theme: loadTheme(),
+}
+
 export const filmSlice = createFilmSlice({
   name: 'films',
-  initialState: {
-    films: [] as BaseFilmResponse[],
-    filteredFilms: [] as BaseFilmResponse[],
-    favorites: loadFavorites(),
-    status: 'idle' as 'idle' | 'loading' | 'succeeded' | 'failed',
-    error: null as string | null,
-    FilmCategory: 'popular' as FilmCategory,
-    sortType: 'default' as string,
-    theme: loadTheme()
-  },
+  initialState,
 
   reducers: (create) => ({
-
-    fetchFilms: create.asyncThunk<{ category: FilmCategory; results: BaseFilmResponse[] }, FilmCategory,
-      { rejectValue: string }>(
-        async (category, { rejectWithValue }) => {
-          try {
-
-            const response = await instance.get(`/${category}`)
-            console.log(response.data.results)
-            return { category, results: response.data.results }
-          } catch (error) {
-            return rejectWithValue(`Failed to load films for ${category}`)
-          }
-        },
-        // ? Блок обработки сценариев и загрузки данных
-        {
-          pending: (state, action) => {
-            const category = action.meta.arg
-            state.status = 'loading'
-            state.error = null
-            state.FilmCategory = category
-          },
-          fulfilled: (state, action) => {
-            const { category, results } = action.payload
-            state.status = 'succeeded'
-            state.FilmCategory = category
-            state.films = results
-            state.filteredFilms = results
-          },
-          rejected: (state, action) => {
-            const category = action.meta.arg
-            state.status = 'failed'
-            state.FilmCategory = category
-            state.error = action.payload as string
-          },
+    fetchFilms: create.asyncThunk<
+      { category: FilmCategory; results: BaseFilmResponse[] },
+      FilmCategory,
+      { rejectValue: string }
+    >(
+      async (category, { rejectWithValue }) => {
+        try {
+          const response = await instance.get('/' + category)
+          return { category, results: response.data.results }
+        } catch {
+          return rejectWithValue('Failed to load films for ' + category)
         }
-      ),
+      },
+      {
+        pending: (state, action) => {
+          const category = action.meta.arg
+          state.status = 'loading'
+          state.error = null
+          state.FilmCategory = category
+        },
+        fulfilled: (state, action) => {
+          const { category, results } = action.payload
+          state.status = 'succeeded'
+          state.FilmCategory = category
+          state.films = results
+          applyFiltersAndSort(state)
+        },
+        rejected: (state, action) => {
+          const category = action.meta.arg
+          state.status = 'failed'
+          state.FilmCategory = category
+          state.error = action.payload as string
+        },
+      }
+    ),
 
-    // ? Блок сортировок и фильтрации
+    toggleGenreFilter: create.reducer((state, action: PayloadAction<number>) => {
+      const genreId = action.payload
+      const exists = state.selectedGenres.includes(genreId)
+
+      state.selectedGenres = exists
+        ? state.selectedGenres.filter((id) => id !== genreId)
+        : [...state.selectedGenres, genreId]
+
+      applyFiltersAndSort(state)
+    }),
+
+    resetFilters: create.reducer((state) => {
+      state.selectedGenres = []
+      state.sortType = 'default'
+      state.filteredFilms = [...state.films]
+    }),
+
     sortByPopularityIncrease: create.reducer((state) => {
-      state.filteredFilms = [...state.films].sort((a, b) => a.popularity - b.popularity)
+      state.sortType = 'popularityIncrease'
+      applyFiltersAndSort(state)
     }),
 
     sortByPopularityDecrease: create.reducer((state) => {
-      state.filteredFilms = [...state.films].sort((a, b) => b.popularity - a.popularity)
+      state.sortType = 'popularityDecrease'
+      applyFiltersAndSort(state)
     }),
 
     sortByReleaseDateIncrease: create.reducer((state) => {
-      state.filteredFilms = [...state.films].sort((a, b) =>
-        new Date(a.release_date).getTime() - new Date(b.release_date).getTime()
-      )
+      state.sortType = 'releaseDateIncrease'
+      applyFiltersAndSort(state)
     }),
 
     sortByReleaseDateDecrease: create.reducer((state) => {
-
-      state.filteredFilms = [...state.films].sort((a, b) =>
-        new Date(b.release_date).getTime() - new Date(a.release_date).getTime()
-      )
+      state.sortType = 'releaseDateDecrease'
+      applyFiltersAndSort(state)
     }),
 
     sortByRatingIncrease: create.reducer((state) => {
-      // state.sortType = 'rating-down'
-      state.filteredFilms = [...state.films].sort((a, b) => a.vote_average - b.vote_average)
+      state.sortType = 'ratingIncrease'
+      applyFiltersAndSort(state)
     }),
 
     sortByRatingDecrease: create.reducer((state) => {
-      state.filteredFilms = [...state.films].sort((a, b) => b.vote_average - a.vote_average)
-
+      state.sortType = 'ratingDecrease'
+      applyFiltersAndSort(state)
     }),
 
     sortByTitleIncrease: create.reducer((state) => {
-      state.filteredFilms = [...state.films].sort((a, b) => a.original_title > b.original_title ? 1 : -1)
+      state.sortType = 'titleIncrease'
+      applyFiltersAndSort(state)
     }),
 
     sortByTitleDecrease: create.reducer((state) => {
-      state.filteredFilms = [...state.films].sort((a, b) => a.original_title < b.original_title ? 1 : -1)
+      state.sortType = 'titleDecrease'
+      applyFiltersAndSort(state)
     }),
 
-    // ? Блок favorites (любимые фильмы)
     toggleFavorite: create.reducer((state, action: PayloadAction<BaseFilmResponse>) => {
       const movieIndex = state.favorites.findIndex((movie) => movie.id === action.payload.id)
       if (movieIndex === -1) {
@@ -150,262 +227,42 @@ export const filmSlice = createFilmSlice({
       } else {
         state.favorites.splice(movieIndex, 1)
       }
-
       saveFavorites(state.favorites)
     }),
+
     removeFavoriteById: create.reducer((state, action: PayloadAction<number>) => {
       state.favorites = state.favorites.filter((movie) => movie.id !== action.payload)
-
       saveFavorites(state.favorites)
     }),
+
     clearFavorites: create.reducer((state) => {
       state.favorites = []
-
       saveFavorites(state.favorites)
     }),
-    //  toggleTheme - добавлено переключение темы
+
     toggleTheme: create.reducer((state) => {
       state.theme = state.theme === 'light' ? 'dark' : 'light'
       saveTheme(state.theme)
     }),
-  })
+  }),
 })
 
-export const { sortByPopularityIncrease, sortByPopularityDecrease, sortByReleaseDateIncrease, sortByReleaseDateDecrease, sortByRatingIncrease, sortByRatingDecrease, sortByTitleIncrease, sortByTitleDecrease, fetchFilms, toggleFavorite, removeFavoriteById, clearFavorites, toggleTheme } = filmSlice.actions
+export const {
+  fetchFilms,
+  toggleGenreFilter,
+  resetFilters,
+  sortByPopularityIncrease,
+  sortByPopularityDecrease,
+  sortByReleaseDateIncrease,
+  sortByReleaseDateDecrease,
+  sortByRatingIncrease,
+  sortByRatingDecrease,
+  sortByTitleIncrease,
+  sortByTitleDecrease,
+  toggleFavorite,
+  removeFavoriteById,
+  clearFavorites,
+  toggleTheme,
+} = filmSlice.actions
+
 export const filmReducerSort = filmSlice.reducer
-
-
-//* Логикак поиска, основные методы без жанра, с массивом полученных фильмов */
-//*********************************** */
-// let movies = {
-//   "page": 1,
-//   "results": [
-//     {
-//       "adult": false,
-//       "backdrop_path": "/zfbjgQE1uSd9wiPTX4VzsLi0rGG.jpg",
-//       "genre_ids": [
-//         18,
-//         80
-//       ],
-//       "id": 278,
-//       "title": "Побег из Шоушенка",
-//       "original_language": "en",
-//       "original_title": "The Shawshank Redemption",
-//       "popularity": 48.1974,
-//       "poster_path": "/yvmKPlTIi0xdcFQIFcQKQJcI63W.jpg",
-//       "release_date": "1994-09-23",
-//       "softcore": false,
-//       "video": false,
-//       "vote_average": 8.719,
-//       "vote_count": 30237
-//     },
-//     {
-//       "adult": false,
-//       "backdrop_path": "/tSPT36ZKlP2WVHJLM4cQPLSzv3b.jpg",
-//       "genre_ids": [
-//         18,
-//         80
-//       ],
-//       "id": 238,
-//       "title": "Крёстный отец",
-//       "original_language": "en",
-//       "original_title": "The Godfather",
-//       "popularity": 39.9109,
-//       "poster_path": "/hoowzozsn0XQGtgH8nyivAMZfPN.jpg",
-//       "release_date": "1972-03-14",
-//       "softcore": false,
-//       "video": false,
-//       "vote_average": 8.686,
-//       "vote_count": 22833
-//     },
-//     {
-//       "adult": false,
-//       "backdrop_path": "/kGzFbGhp99zva6oZODW5atUtnqi.jpg",
-//       "genre_ids": [
-//         18,
-//         80
-//       ],
-//       "id": 240,
-//       "title": "Крёстный отец 2",
-//       "original_language": "en",
-//       "original_title": "The Godfather Part II",
-//       "popularity": 25.4571,
-//       "poster_path": "/tOLQ3iRDfbwhVaw3QjDzIOS7zcu.jpg",
-//       "release_date": "1974-12-20",
-//       "softcore": false,
-//       "video": false,
-//       "vote_average": 8.571,
-//       "vote_count": 13843
-//     },
-//     {
-//       "adult": false,
-//       "backdrop_path": "/zb6fM1CX41D9rF9hdgclu0peUmy.jpg",
-//       "genre_ids": [
-//         18,
-//         36,
-//         10752
-//       ],
-//       "id": 424,
-//       "title": "Список Шиндлера",
-//       "original_language": "en",
-//       "original_title": "Schindler's List",
-//       "popularity": 27.601,
-//       "poster_path": "/4K8fGGcJP2EoGDucILnaJcOJhZl.jpg",
-//       "release_date": "1993-12-15",
-//       "softcore": false,
-//       "video": false,
-//       "vote_average": 8.568,
-//       "vote_count": 17379
-//     },
-//     {
-//       "adult": false,
-//       "backdrop_path": "/w4bTBXcqXc2TUyS5Fc4h67uWbPn.jpg",
-//       "genre_ids": [
-//         18
-//       ],
-//       "id": 389,
-//       "title": "12 разгневанных мужчин",
-//       "original_language": "en",
-//       "original_title": "12 Angry Men",
-//       "popularity": 21.5875,
-//       "poster_path": "/uDFEvhvKrH61KuGWWozRtbw2Rjv.jpg",
-//       "release_date": "1957-04-10",
-//       "softcore": false,
-//       "video": false,
-//       "vote_average": 8.56,
-//       "vote_count": 9933
-//     },
-//     {
-//       "adult": false,
-//       "backdrop_path": "/dyJvKsNs2KP8qQnAXbRwDjblViy.jpg",
-//       "genre_ids": [
-//         16,
-//         10751,
-//         14
-//       ],
-//       "id": 129,
-//       "title": "Унесённые призраками",
-//       "original_language": "ja",
-//       "original_title": "千と千尋の神隠し",
-//       "popularity": 32.5404,
-//       "poster_path": "/uANcal3l15d0rFb5fTXhCAhSold.jpg",
-//       "release_date": "2001-07-20",
-//       "softcore": false,
-//       "video": false,
-//       "vote_average": 8.534,
-//       "vote_count": 18222
-//     },
-//     {
-//       "adult": false,
-//       "backdrop_path": "/cfT29Im5VDvjE0RpyKOSdCKZal7.jpg",
-//       "genre_ids": [
-//         28,
-//         80,
-//         53
-//       ],
-//       "id": 155,
-//       "title": "Тёмный рыцарь",
-//       "original_language": "en",
-//       "original_title": "The Dark Knight",
-//       "popularity": 36.2439,
-//       "poster_path": "/aPtN76OjnNKLqCJ2FJBnQOIL031.jpg",
-//       "release_date": "2008-07-16",
-//       "softcore": false,
-//       "video": false,
-//       "vote_average": 8.529,
-//       "vote_count": 35607
-//     },
-//     {
-//       "adult": false,
-//       "backdrop_path": "/6N5d02quKqMKqvTpOdFmBDy9scY.jpg",
-//       "genre_ids": [
-//         35,
-//         18,
-//         10749
-//       ],
-//       "id": 19404,
-//       "title": "Непохищенная невеста",
-//       "original_language": "hi",
-//       "original_title": "दिलवाले दुल्हनिया ले जायेंगे",
-//       "popularity": 16.8093,
-//       "poster_path": "/sctBFkLHYYqaHHNJj7r1jSOkfB9.jpg",
-//       "release_date": "1995-10-20",
-//       "softcore": false,
-//       "video": false,
-//       "vote_average": 8.5,
-//       "vote_count": 4579
-//     },
-//     {
-//       "adult": false,
-//       "backdrop_path": "/b6HWTOxn1xevvyHU2K9ICvaRU6g.jpg",
-//       "genre_ids": [
-//         14,
-//         18,
-//         80
-//       ],
-//       "id": 497,
-//       "title": "Зелёная миля",
-//       "original_language": "en",
-//       "original_title": "The Green Mile",
-//       "popularity": 28.0945,
-//       "poster_path": "/lHxe8t4B0CKv4DO0C0B4rsuiG95.jpg",
-//       "release_date": "1999-12-10",
-//       "softcore": false,
-//       "video": false,
-//       "vote_average": 8.504,
-//       "vote_count": 19163
-//     },
-//     {
-//       "adult": false,
-//       "backdrop_path": "/2u7zbn8EudG6kLlBzUYqP8RyFU4.jpg",
-//       "genre_ids": [
-//         12,
-//         14,
-//         28
-//       ],
-//       "id": 122,
-//       "title": "Властелин колец: Возвращение короля",
-//       "original_language": "en",
-//       "original_title": "The Lord of the Rings: The Return of the King",
-//       "popularity": 34.5875,
-//       "poster_path": "/x6NqCWwU1SrQnvfdmVPAuATyUgD.jpg",
-//       "release_date": "2003-12-17",
-//       "softcore": false,
-//       "video": false,
-//       "vote_average": 8.497,
-//       "vote_count": 26403
-//     }
-//   ],
-//   "total_pages": 542,
-//   "total_results": 10828
-// }
-
-//
-// console.log(popularityIncrease(movies["results"]))
-
-// let popularityDecrease = (movie) => {
-//   const decrease = [...movie].sort((a, b) => a.popularity - b.popularity)
-//   return decrease
-// }
-
-
-
-
-
-// console.log(sortReleaseDateDecrease(movies["results"]))
-// console.log(popularityRaitingDecrease(movies["results"]))
-// console.log(TitleIncrease(movies["results"]))
-// console.log(TitleDecrease(movies["results"]))
-
-// return (
-//   <div>
-//     {movies["results"].map((movie) => (
-//       <div key={movie.id}>
-//         <div>Title: {movie.title}</div>
-//         <div>Relise: {movie.release_date}</div>
-//       </div>
-//     ))}
-//   </div>
-// )
-
-//*********************************** */

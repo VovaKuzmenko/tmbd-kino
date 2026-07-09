@@ -23,7 +23,7 @@ export const Film = ({ movie, isFavorite, onToggleFavorite }: FilmProps) => {
 
 
   return (
-    <StyledNavLink to={PATHS.FILM_INFO}>
+    <StyledNavLink to={`${PATHS.FILM_INFO}/${movie.id}`}>
       <FilmCart>
         <LikeButtonWrap
           onClick={(event) => {

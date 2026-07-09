@@ -51,8 +51,10 @@ function App() {
           {/* фильмы отмеченные -  с красным сердечком (любимые)  */}
           <Route path={PATHS.FAVORITES} element={<MenuFavorites />} />
           <Route path={PATHS.ERROR404} element={<Error404 />} />
-          <Route path={PATHS.FILM_INFO} element={<FilmInfo />} />
+          {/* <Route path={PATHS.FILM_INFO} element={<FilmInfo />} /> */}
+          <Route path="/film_info/:id" element={<FilmInfo />} />
           <Route path='*' element={<Navigate to={PATHS.ERROR404} />} />
+
         </Routes>
       </main>
       <Footer />

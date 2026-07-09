@@ -1,32 +1,52 @@
+import { useDispatch, useSelector } from 'react-redux'
+import type { AppDispatch, RootState } from '../../../../../store/store'
+import { toggleGenreFilter } from '../../../../../store/app-slice'
+import styles from './FiltersButton.module.css'
 
-
-
-
-
+const MOVIE_GENRES = [
+  { id: 28, name: 'Action' },
+  { id: 12, name: 'Adventure' },
+  { id: 16, name: 'Animation' },
+  { id: 35, name: 'Comedy' },
+  { id: 80, name: 'Crime' },
+  { id: 99, name: 'Documentary' },
+  { id: 18, name: 'Drama' },
+  { id: 10751, name: 'Family' },
+  { id: 14, name: 'Fantasy' },
+  { id: 36, name: 'History' },
+  { id: 27, name: 'Horror' },
+  { id: 10402, name: 'Music' },
+  { id: 9648, name: 'Mystery' },
+  { id: 10749, name: 'Romance' },
+  { id: 878, name: 'Science Fiction' },
+  { id: 10770, name: 'TV Movie' },
+  { id: 53, name: 'Thriller' },
+  { id: 10752, name: 'War' },
+  { id: 37, name: 'Western' },
+]
 
 export const FiltersButton = () => {
+  const dispatch = useDispatch<AppDispatch>()
+  const selectedGenres = useSelector((state: RootState) => state.films.selectedGenres)
+
   return (
-    <div>
-      {/* кнопки фильтрации */}
-      <button className="button variantSecondary">Action</button>
-      <button className="button variantSecondary">Adventure</button>
-      <button className="button variantSecondary">Animation</button>
-      <button className="button variantSecondary">Comedy</button>
-      <button className="button variantSecondary">Crime</button>
-      <button className="button variantSecondary">Documentary</button>
-      <button className="button variantSecondary">Drama</button>
-      <button className="button variantSecondary">Family</button>
-      <button className="button variantSecondary">Fantasy</button>
-      <button className="button variantSecondary">History</button>
-      <button className="button variantSecondary">Horror</button>
-      <button className="button variantSecondary">Music</button>
-      <button className="button variantSecondary">Mystery</button>
-      <button className="button variantSecondary">Romance</button>
-      <button className="button variantSecondary">Science Fiction</button>
-      <button className="button variantSecondary">TV Movie</button>
-      <button className="button variantSecondary">Thriller</button>
-      <button className="button variantSecondary">War</button>
-      <button className="button variantSecondary">Western</button>
+    <div className={styles.buttonsWrap}>
+      {MOVIE_GENRES.map((genre) => {
+        const isActive = selectedGenres.includes(genre.id)
+
+        return (
+          <button
+            key={genre.id}
+            type="button"
+            aria-pressed={isActive}
+            onClick={() => dispatch(toggleGenreFilter(genre.id))}
+            className={`button variantSecondary ${styles.genreButton} ${isActive ? styles.genreButtonActive : ''
+              }`}
+          >
+            {genre.name}
+          </button>
+        )
+      })}
     </div>
   )
 }
