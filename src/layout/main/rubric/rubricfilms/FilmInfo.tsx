@@ -1,20 +1,14 @@
 
 import { useState, useEffect } from 'react'
-import axios from "axios"
-import instance from './../../../../components/instance/instance'
 import type * as Types from './../../../../components/types/types'
+import instance, { IMG_BASE_URL } from './../../../../components/instance/instance'
 
 
-// карточка фильма - расширенная инфоормация о фильме
-{/*Картинка
-  название, год выпуска, рейтинг, время, описание, жанры, актеры.
-  Отдельная рубрика - похожие фильмы (Similar Movies), подгружаются соответствующие карточки
-  */}
-// ! Создать еще один чистый проект для работы с частями этого => перенос JSX, проверка редьюссеров.
+
 
 export const FilmInfo = () => {
-
-  const [cast, setCast] = useState<Types.Cast[] | null>(null)
+  const [film, setFilm] = useState<Types.BaseFilmResponse | null>(null)
+  const [cast] = useState<Types.Cast[] | null>(null)
   const [similar, setSimilar] = useState<Types.BaseFilmResponse[] | null>(null)
   const [error, setError] = useState<Types.Error | null>(null)
 
@@ -22,13 +16,16 @@ export const FilmInfo = () => {
   useEffect(() => {
     const fetchCastCredits = async () => {
       try {
-        // https://api.themoviedb.org/3/movie/{movie_id}/credits
-        const response = await instance.get('/278/credits')
-        setCast(response.data)
-        console.log(response.data)
+        const response = await instance.get('/278')
+        setFilm(response.data)
       } catch (error) {
         console.error('Детали ошибки:', error)
-        // setError(error)
+        const message = error instanceof Error ? error.message : 'Unknown error'
+        setError({
+          code: 'unknown',
+          message,
+          name: false,
+        })
       } finally {
       }
     }
@@ -39,22 +36,27 @@ export const FilmInfo = () => {
 
 
   useEffect(() => {
-    const fetchSimilar = async () => {
+    const fetchFilm = async () => {
       try {
-        // https://api.themoviedb.org/3/movie/{movie_id}/similar
-        const response = await instance.get('/278/similar')
+        const response = await instance.get('/278/credits')
         setSimilar(response.data)
         console.log(response.data)
       } catch (error) {
         console.error('Детали ошибки:', error)
-        setError(error)
+        // setError(error)
       } finally {
       }
     }
-    fetchSimilar()
+    fetchFilm()
   }, [])
 
   console.log(cast, similar)
+
+  const posterSrc = film?.poster_path
+    ? `${IMG_BASE_URL}/w500${film.poster_path}`
+    : '/no-poster.svg'
+
+
 
   if (error) return (<div>
     <div>Ошибка: {error.code}</div>
@@ -68,8 +70,13 @@ export const FilmInfo = () => {
         {/* Секция фильма */}
         <div className="content">
           <div className='poster'>
-            {/* картинка фильма с обрезанными краями без эфектов */}
-            <img src="" alt="Постер к фильму" />
+            <img
+              src={posterSrc}
+              alt="Постер к фильму"
+              onError={(event) => {
+                event.currentTarget.src = '/no-poster.svg'
+              }}
+            />
           </div>
           <div className='details'>
             <div className='details_header '>
@@ -100,7 +107,7 @@ export const FilmInfo = () => {
             <h2>Cast</h2>
           </div>
           <div className="grid">
-            <article className="card" key={cast}>
+            <article className="card" key="cast-card-1">
               <div className="avatarFrame">
                 <img src="" alt="" className="avatar" />
               </div>

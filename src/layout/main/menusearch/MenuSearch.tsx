@@ -5,6 +5,7 @@ import { Search } from '../../../components/search/Search'
 import type { BaseFilmResponse } from '../../../components/types'
 import { IMG_BASE_URL } from '../../../components/instance/instance'
 import styles from './MenuSearch.module.css'
+import { Picture } from '../../../components/picture/Picture'
 
 type SearchResponse = {
   page: number
@@ -128,15 +129,12 @@ export const MenuSearch = () => {
           <div className={styles.grid}>
             {movies.map((movie) => (
               <article key={movie.id} className={styles.card}>
-                {movie.poster_path ? (
-                  <img
-                    src={`${IMG_BASE_URL}/w342${movie.poster_path}`}
-                    alt={movie.title}
-                    className={styles.poster}
-                  />
-                ) : (
-                  <div className={styles.noPoster}>No poster</div>
-                )}
+                <Picture
+                  src={movie.poster_path ? `IMG_BASE_URL${movie.poster_path}` : '/no-poster.svg'} // +
+                  alt={movie.title}
+                  fallbackSrc="/no-poster.svg" // +
+                  className={styles.poster} // +
+                />
 
                 <div className={styles.cardBody}>
                   <h3 className={styles.movieTitle}>{movie.title}</h3>

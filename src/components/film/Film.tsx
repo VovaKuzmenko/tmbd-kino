@@ -14,11 +14,12 @@ type FilmProps = {
 }
 
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500'
+const NO_POSTER_URL = '/no-poster.svg'
 
 export const Film = ({ movie, isFavorite, onToggleFavorite }: FilmProps) => {
   const posterUrl = movie.poster_path
     ? IMAGE_BASE_URL + movie.poster_path
-    : 'https://via.placeholder.com/300x450?text=No+Poster'
+    : NO_POSTER_URL
 
 
   return (

@@ -1,5 +1,5 @@
 type ReitingProps = {
-  value: number
+  value?: number
 }
 
 const getBadgeColor = (rating: number) => {
@@ -9,7 +9,7 @@ const getBadgeColor = (rating: number) => {
 }
 
 export const Reiting = ({ value = 0 }: ReitingProps) => {
-  const formattedRating = Number(value.toFixed(1))
+  const formattedRating = Number(value?.toFixed(1))
 
   return (
     <div

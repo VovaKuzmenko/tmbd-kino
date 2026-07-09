@@ -1,19 +1,48 @@
+
+import { useState, useEffect } from 'react'
+
+
+
 type PictureProps = {
   src: string
   alt: string
+  fallbackSrc?: string
+  className?: string
+  style?: React.CSSProperties
 }
 
-export const Picture = ({ src, alt }: PictureProps) => {
+const DEFAULT_FALLBACK_SRC = '/no-poster.svg'
+
+export const Picture = ({
+  src,
+  alt,
+  fallbackSrc = DEFAULT_FALLBACK_SRC, // +
+  className, // +
+  style, // +
+}: PictureProps) => {
+  const [currentSrc, setCurrentSrc] = useState(src || fallbackSrc) // +
+
+  useEffect(() => { // +
+    setCurrentSrc(src || fallbackSrc) // +
+  }, [src, fallbackSrc]) // +
+
   return (
     <img
-      src={src}
+      src={currentSrc} // +
       alt={alt}
-      style={{
+      className={className} // +
+      onError={() => { // +
+        if (currentSrc !== fallbackSrc) { // +
+          setCurrentSrc(fallbackSrc) // +
+        } // +
+      }} // +
+      style={{ // +
         width: "100%",
         height: 320,
         objectFit: "cover",
-        display: "block"
-      }}
+        display: "block",
+        ...style, // +
+      }} // +
     />
   )
 }
