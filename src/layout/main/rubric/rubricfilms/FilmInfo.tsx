@@ -1,38 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import type * as Types from './../../../../components/types/types'
-import instance, { IMG_BASE_URL } from './../../../../components/instance/instance'
+import { IMG_BASE_URL } from './../../../../components/instance/instance'
+import { useFilmInfoData } from './useFilmInfoData'
 import styles from './FilmInfo.module.css'
-
-type FilmDetails = Omit<Types.BaseFilmResponse, 'genre_ids' | 'poster_path'> & {
-  poster_path: string | null
-  runtime: number | null
-  genres: Array<{ id: number; name: string }>
-}
-
-type CastMember = {
-  id: number
-  name: string
-  character: string
-  profile_path: string | null
-}
-
-type CreditsResponse = {
-  cast: CastMember[]
-}
-
-type SimilarMovie = Omit<Types.BaseFilmResponse, 'poster_path'> & {
-  poster_path: string | null
-}
-
-type SimilarResponse = {
-  results: SimilarMovie[]
-}
-
-type ErrorState = {
-  code: string
-  message: string
-} | null
 
 const NO_POSTER_URL = 'https://placehold.co/300x450?text=No+Poster'
 const NO_AVATAR_URL = 'https://placehold.co/120x120?text=No+Photo'
@@ -55,46 +25,7 @@ export const FilmInfo = () => {
   const navigate = useNavigate()
   const movieId = id ?? '278'
 
-  const [film, setFilm] = useState<FilmDetails | null>(null)
-  const [cast, setCast] = useState<CastMember[]>([])
-  const [similar, setSimilar] = useState<SimilarMovie[]>([])
-  const [error, setError] = useState<ErrorState>(null)
-  const [isLoading, setIsLoading] = useState(false)
-
-  useEffect(() => {
-    let isActive = true
-
-    const fetchFilmInfo = async () => {
-      setIsLoading(true)
-      setError(null)
-
-      try {
-        const [filmResponse, creditsResponse, similarResponse] = await Promise.all([
-          instance.get<FilmDetails>('/' + movieId),
-          instance.get<CreditsResponse>('/' + movieId + '/credits'),
-          instance.get<SimilarResponse>('/' + movieId + '/similar'),
-        ])
-
-        if (!isActive) return
-
-        setFilm(filmResponse.data)
-        setCast((creditsResponse.data.cast ?? []).slice(0, 8))
-        setSimilar((similarResponse.data.results ?? []).slice(0, 6))
-      } catch (err) {
-        if (!isActive) return
-        const message = err instanceof Error ? err.message : 'Unknown error'
-        setError({ code: 'fetch_error', message })
-      } finally {
-        if (isActive) setIsLoading(false)
-      }
-    }
-
-    void fetchFilmInfo()
-
-    return () => {
-      isActive = false
-    }
-  }, [movieId])
+  const { film, cast, similar, error, isLoading } = useFilmInfoData(movieId)
 
   const releaseDate = useMemo(() => {
     if (!film?.release_date) return '—'
