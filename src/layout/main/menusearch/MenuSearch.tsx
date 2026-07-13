@@ -7,12 +7,9 @@ import { IMG_BASE_URL } from '../../../components/instance/instance'
 import styles from './MenuSearch.module.css'
 import { Picture } from '../../../components/picture/Picture'
 import { normalizeRequestError, type RequestError } from '../../../Error/error'
+import { searchResponseSchema } from '../../../api/schemas'
+import { parseApiResponse } from '../../../api/validateResponse'
 
-type SearchResponse = {
-  page: number
-  total_pages: number
-  results: BaseFilmResponse[]
-}
 
 export const MenuSearch = () => {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -41,7 +38,7 @@ export const MenuSearch = () => {
     setError(null)
 
     try {
-      const response = await axios.get<SearchResponse>('https://api.themoviedb.org/3/search/movie', {
+      const response = await axios.get('https://api.themoviedb.org/3/search/movie', {
         params: {
           api_key: import.meta.env.VITE_API_KEY,
           language: 'ru-RU',
@@ -50,10 +47,11 @@ export const MenuSearch = () => {
           page: targetPage,
         },
       })
+      const parsed = parseApiResponse(searchResponseSchema, response.data)
 
-      setMovies(response.data.results ?? [])
-      setPage(response.data.page ?? targetPage)
-      setTotalPages(Math.max(1, response.data.total_pages ?? 1))
+      setMovies(parsed.results ?? [])
+      setPage(parsed.page ?? targetPage)
+      setTotalPages(Math.max(1, parsed.total_pages ?? 1))
       setStatus('success')
     } catch (error: unknown) {
       const normalizedError = normalizeRequestError(error, 'Не удалось загрузить результаты поиска')

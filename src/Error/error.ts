@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { ZodError } from 'zod'
 
 export type RequestError = {
   code: string
@@ -20,10 +21,31 @@ export const createInitialRequestState = <TData>(data: TData): RequestState<TDat
   error: null,
 })
 
+const formatZodIssues = (error: ZodError, maxIssues = 3): string => {
+  return error.issues
+    .slice(0, maxIssues)
+    .map((issue) => {
+      const path = issue.path.length > 0 ? issue.path.join('.') : 'root'
+      return path + ': ' + issue.message
+    })
+    .join('; ')
+}
+
 export const normalizeRequestError = (
   error: unknown,
   fallbackMessage = 'Request failed'
 ): RequestError => {
+  if (error instanceof ZodError) {
+    const details = formatZodIssues(error)
+
+    return {
+      code: 'invalid_response_schema',
+      message: details
+        ? 'Invalid server response format. ' + details
+        : 'Invalid server response format.',
+    }
+  }
+
   if (axios.isAxiosError(error)) {
     const apiMessage =
       typeof error.response?.data === 'object' &&

@@ -1,4 +1,3 @@
-import { Button } from "../../../../components/button/Button"
 import styles from './RubricHeaderMovies.module.css'
 
 type MuviesHeaderRubricProps = {

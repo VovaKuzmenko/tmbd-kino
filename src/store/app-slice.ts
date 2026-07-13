@@ -2,6 +2,8 @@ import { buildCreateSlice, asyncThunkCreator, type PayloadAction } from '@reduxj
 import type { BaseFilmResponse, FilmCategory } from '../components/types/types.ts'
 import instance from './../components/instance/instance'
 import { normalizeRequestError, type RequestError } from '../Error/error'
+import { filmListResponseSchema } from '../api/schemas'
+import { parseApiResponse } from '../api/validateResponse'
 
 export type ThemeMode = 'light' | 'dark'
 
@@ -136,7 +138,8 @@ export const filmSlice = createFilmSlice({
       async (category, { rejectWithValue }) => {
         try {
           const response = await instance.get('/' + category)
-          return { category, results: response.data.results }
+          const parsed = parseApiResponse(filmListResponseSchema, response.data)
+          return { category, results: parsed.results }
         } catch (error: unknown) {
           return rejectWithValue(
             normalizeRequestError(error, 'Failed to load films for ' + category)

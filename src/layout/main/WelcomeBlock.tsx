@@ -4,13 +4,12 @@ import { useNavigate } from 'react-router-dom'
 import styles from './WelcomeBlock.module.css'
 import { Search } from '../../components/search/Search'
 import instance, { IMG_BASE_URL } from '../../components/instance/instance'
-import type { BaseFilmResponse } from '../../components/types'
 import { PATHS } from '../../constans/path'
 import { normalizeRequestError, type RequestError } from '../../Error/error'
+import { filmListResponseSchema } from '../../api/schemas'
+import { parseApiResponse } from '../../api/validateResponse'
 
-type PopularResponse = {
-  results: BaseFilmResponse[]
-}
+
 
 export const WelcomeBlock = () => {
   const [heroImage, setHeroImage] = useState('')
@@ -27,13 +26,14 @@ export const WelcomeBlock = () => {
       try {
         const randomPage = Math.floor(Math.random() * 500) + 1
 
-        const response = await instance.get<PopularResponse>('/popular', {
+        const response = await instance.get('/popular', {
           params: { page: randomPage },
         })
+        const parsed = parseApiResponse(filmListResponseSchema, response.data)
 
         if (!isActive) return
 
-        const movies = response.data.results ?? []
+        const movies = parsed.results ?? []
         if (!movies.length) {
           setHeroError({
             code: 'empty_results',

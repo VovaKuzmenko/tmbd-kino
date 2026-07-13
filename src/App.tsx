@@ -13,9 +13,9 @@ import { Error404 } from './components/error404/Error404'
 import { PATHS } from './constans/path'
 import { FilmInfo } from './layout/main/rubric/rubricfilms/FilmInfo'
 import type { FilmCategory } from "../src/components/types"
+import { useSelector } from 'react-redux'
 // Для визуального переключения темы
 import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import type { RootState } from './store/store'
 // import { toggleTheme } from './store/app-slice'
 
@@ -28,7 +28,6 @@ const rubrics: Array<{ title: string; category: FilmCategory }> = [
 ]
 
 function App() {
-  const dispatch = useDispatch()
   const theme = useSelector((state: RootState) => state.films.theme)
 
   useEffect(() => {

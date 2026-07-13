@@ -9,7 +9,7 @@ export const MuviesHeaderRubric = () => {
   return (
     <div>
       <RubricTitle />
-      <RubricButton />
+      <RubricButton title="Popular Movies" category="popular" />
     </div>
   )
 }
