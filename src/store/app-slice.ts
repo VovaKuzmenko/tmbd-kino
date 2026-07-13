@@ -1,6 +1,7 @@
 import { buildCreateSlice, asyncThunkCreator, type PayloadAction } from '@reduxjs/toolkit'
 import type { BaseFilmResponse, FilmCategory } from '../components/types/types.ts'
 import instance from './../components/instance/instance'
+import { normalizeRequestError, type RequestError } from '../Error/error'
 
 export type ThemeMode = 'light' | 'dark'
 
@@ -20,7 +21,7 @@ type FilmsState = {
   filteredFilms: BaseFilmResponse[]
   favorites: BaseFilmResponse[]
   status: 'idle' | 'loading' | 'succeeded' | 'failed'
-  error: string | null
+  error: RequestError | null
   FilmCategory: FilmCategory
   sortType: SortType
   selectedGenres: number[]
@@ -130,14 +131,16 @@ export const filmSlice = createFilmSlice({
     fetchFilms: create.asyncThunk<
       { category: FilmCategory; results: BaseFilmResponse[] },
       FilmCategory,
-      { rejectValue: string }
+      { rejectValue: RequestError }
     >(
       async (category, { rejectWithValue }) => {
         try {
           const response = await instance.get('/' + category)
           return { category, results: response.data.results }
-        } catch {
-          return rejectWithValue('Failed to load films for ' + category)
+        } catch (error: unknown) {
+          return rejectWithValue(
+            normalizeRequestError(error, 'Failed to load films for ' + category)
+          )
         }
       },
       {
@@ -158,7 +161,10 @@ export const filmSlice = createFilmSlice({
           const category = action.meta.arg
           state.status = 'failed'
           state.FilmCategory = category
-          state.error = action.payload as string
+          state.error = action.payload ?? {
+            code: 'unknown_error',
+            message: 'Unexpected error',
+          }
         },
       }
     ),
@@ -240,8 +246,8 @@ export const filmSlice = createFilmSlice({
       saveFavorites(state.favorites)
     }),
 
-    toggleTheme: create.reducer((state) => {
-      state.theme = state.theme === 'light' ? 'dark' : 'light'
+    setTheme: create.reducer((state, action: PayloadAction<ThemeMode>) => {
+      state.theme = action.payload
       saveTheme(state.theme)
     }),
   }),
@@ -262,7 +268,7 @@ export const {
   toggleFavorite,
   removeFavoriteById,
   clearFavorites,
-  toggleTheme,
+  setTheme,
 } = filmSlice.actions
 
 export const filmReducerSort = filmSlice.reducer

@@ -6,42 +6,69 @@ import { Search } from '../../components/search/Search'
 import instance, { IMG_BASE_URL } from '../../components/instance/instance'
 import type { BaseFilmResponse } from '../../components/types'
 import { PATHS } from '../../constans/path'
+import { normalizeRequestError, type RequestError } from '../../Error/error'
 
 type PopularResponse = {
   results: BaseFilmResponse[]
 }
 
 export const WelcomeBlock = () => {
-  const [heroImage, setHeroImage] = useState<string>('')
+  const [heroImage, setHeroImage] = useState('')
+  const [heroError, setHeroError] = useState<RequestError | null>(null)
   const [query, setQuery] = useState('')
   const navigate = useNavigate()
 
   useEffect(() => {
+    let isActive = true
+
     const loadRandomPopularHero = async () => {
+      setHeroError(null)
+
       try {
-        // TMDB popular: до 500 страниц, берем случайную страницу
         const randomPage = Math.floor(Math.random() * 500) + 1
 
         const response = await instance.get<PopularResponse>('/popular', {
-          params: { page: randomPage }
+          params: { page: randomPage },
         })
 
+        if (!isActive) return
+
         const movies = response.data.results ?? []
-        if (!movies.length) return
+        if (!movies.length) {
+          setHeroError({
+            code: 'empty_results',
+            message: 'Не удалось подобрать фильм для фонового изображения',
+          })
+          return
+        }
 
         const randomMovie = movies[Math.floor(Math.random() * movies.length)]
-
-        // Предпочтительно backdrop, если нет - poster
         const imagePath = randomMovie.backdrop_path || randomMovie.poster_path
-        if (!imagePath) return
+
+        if (!imagePath) {
+          setHeroError({
+            code: 'missing_image',
+            message: 'У выбранного фильма нет фонового изображения',
+          })
+          return
+        }
 
         setHeroImage(`${IMG_BASE_URL}/original${imagePath}`)
-      } catch (e) {
-        console.error('Failed to load random popular image', e)
+      } catch (error: unknown) {
+        if (!isActive) return
+
+        setHeroImage('')
+        setHeroError(
+          normalizeRequestError(error, 'Не удалось загрузить фоновое изображение')
+        )
       }
     }
 
-    loadRandomPopularHero()
+    void loadRandomPopularHero()
+
+    return () => {
+      isActive = false
+    }
   }, [])
 
   const handleSubmit = () => {
@@ -57,7 +84,7 @@ export const WelcomeBlock = () => {
 
   return (
     <StyledMain className={styles.StyledMain}>
-      <div className={styles.imageLayer} >
+      <div className={styles.imageLayer}>
         {heroImage && <img src={heroImage} alt="картинка на весь экран" />}
       </div>
 
@@ -71,6 +98,8 @@ export const WelcomeBlock = () => {
           onSubmit={handleSubmit}
           onClear={handleClear}
         />
+
+        {heroError && <p>{heroError.message}</p>}
       </div>
     </StyledMain>
   )

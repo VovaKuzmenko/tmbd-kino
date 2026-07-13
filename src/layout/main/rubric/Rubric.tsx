@@ -1,5 +1,4 @@
-
-import { useEffect } from "react"
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchFilms } from './../../../store/app-slice'
 import type { AppDispatch, RootState } from "./../../../store/store"
@@ -23,10 +22,8 @@ export const Rubric = ({ title, category }: RubricProps) => {
   const status = useSelector((state: RootState) => state.films.status)
   const error = useSelector((state: RootState) => state.films.error)
 
-
   useEffect(() => {
     if (!category) return
-
     dispatch(fetchFilms(category))
   }, [dispatch, category])
 
@@ -34,11 +31,19 @@ export const Rubric = ({ title, category }: RubricProps) => {
     <FlexWrapper>
       <StyledRubric className={styles['StyledRubric']}>
         <MuviesHeaderRubric title={title} />
+
         {category && status === 'loading' && <div>loading...</div>}
-        {category && error && <div>Ошибка: {error}</div>}
-        {movies.length === 0 && <div>No movies</div>}
+
+        {category && error && (
+          <div>
+            <div>Ошибка: {error.message}</div>
+            {error.status && <div>HTTP status: {error.status}</div>}
+          </div>
+        )}
+
+        {category && status === 'succeeded' && movies.length === 0 && <div>No movies</div>}
         {movies.length > 0 && <RubricFilms movies={movies.slice(0, 6)} />}
-      </StyledRubric >
+      </StyledRubric>
     </FlexWrapper>
   )
 }

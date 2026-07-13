@@ -6,6 +6,7 @@ import type { BaseFilmResponse } from '../../../components/types'
 import { IMG_BASE_URL } from '../../../components/instance/instance'
 import styles from './MenuSearch.module.css'
 import { Picture } from '../../../components/picture/Picture'
+import { normalizeRequestError, type RequestError } from '../../../Error/error'
 
 type SearchResponse = {
   page: number
@@ -22,6 +23,7 @@ export const MenuSearch = () => {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [error, setError] = useState<RequestError | null>(null)
 
   const queryFromUrl = (searchParams.get('q') ?? '').trim()
 
@@ -31,10 +33,12 @@ export const MenuSearch = () => {
     setStatus('idle')
     setPage(1)
     setTotalPages(1)
+    setError(null)
   }
 
   const fetchMovies = useCallback(async (searchValue: string, targetPage: number) => {
     setStatus('loading')
+    setError(null)
 
     try {
       const response = await axios.get<SearchResponse>('https://api.themoviedb.org/3/search/movie', {
@@ -51,9 +55,11 @@ export const MenuSearch = () => {
       setPage(response.data.page ?? targetPage)
       setTotalPages(Math.max(1, response.data.total_pages ?? 1))
       setStatus('success')
-    } catch {
+    } catch (error: unknown) {
+      const normalizedError = normalizeRequestError(error, 'Не удалось загрузить результаты поиска')
       setMovies([])
       setStatus('error')
+      setError(normalizedError)
     }
   }, [])
 
@@ -78,8 +84,6 @@ export const MenuSearch = () => {
     setSearchParams({})
   }
 
-
-
   const handleSearch = async () => {
     const normalizedQuery = query.trim()
 
@@ -98,6 +102,7 @@ export const MenuSearch = () => {
 
   const canGoPrev = page > 1
   const canGoNext = page < totalPages
+
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Search Results</h2>
@@ -110,14 +115,15 @@ export const MenuSearch = () => {
         onClear={handleInputClear}
       />
 
-
-
       {status === 'idle' && (
         <p className={styles.hint}>Enter a movie title to start searching.</p>
       )}
 
-      {status === 'error' && (
-        <p className={styles.hint}>Failed to fetch movies. Please try again.</p>
+      {status === 'error' && error && (
+        <div className={styles.hint}>
+          <p>{error.message}</p>
+          {error.status && <p>HTTP status: {error.status}</p>}
+        </div>
       )}
 
       {status === 'success' && movies.length === 0 && (
@@ -130,10 +136,10 @@ export const MenuSearch = () => {
             {movies.map((movie) => (
               <article key={movie.id} className={styles.card}>
                 <Picture
-                  src={movie.poster_path ? `IMG_BASE_URL${movie.poster_path}` : '/no-poster.svg'} // +
+                  src={movie.poster_path ? `${IMG_BASE_URL} / w342${movie.poster_path}` : '/no-poster.svg'}
                   alt={movie.title}
-                  fallbackSrc="/no-poster.svg" // +
-                  className={styles.poster} // +
+                  fallbackSrc="/no-poster.svg"
+                  className={styles.poster}
                 />
 
                 <div className={styles.cardBody}>
