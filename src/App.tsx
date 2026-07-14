@@ -17,6 +17,7 @@ import { useSelector } from 'react-redux'
 // Для визуального переключения темы
 import { useEffect } from 'react'
 import type { RootState } from './store/store'
+import { LinearProgress } from './components/linearprogress/LinearProgress'
 // import { toggleTheme } from './store/app-slice'
 
 
@@ -37,6 +38,7 @@ function App() {
 
     // Это основной блок - майн, на каждую кнопку должен быть свой
     <div className={styles.container}>
+      <LinearProgress />
       <Header />
       {/* main-оберткуа для прилипания  Header и Footer*/}
       <main className={styles.main}>

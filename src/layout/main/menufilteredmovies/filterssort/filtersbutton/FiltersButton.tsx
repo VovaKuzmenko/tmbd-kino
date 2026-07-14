@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import type { AppDispatch, RootState } from '../../../../../store/store'
-import { toggleGenreFilter } from '../../../../../store/app-slice'
 import styles from './FiltersButton.module.css'
+import { toggleGenreFilter, beginUiTask, endUiTask } from '../../../../../store/app-slice'
 
 const MOVIE_GENRES = [
   { id: 28, name: 'Action' },
@@ -29,6 +29,13 @@ export const FiltersButton = () => {
   const dispatch = useDispatch<AppDispatch>()
   const selectedGenres = useSelector((state: RootState) => state.films.selectedGenres)
 
+  const handleGenreClick = (genreId: number) => {
+    dispatch(beginUiTask())
+    dispatch(toggleGenreFilter(genreId))
+    requestAnimationFrame(() => dispatch(endUiTask()))
+  }
+
+
   return (
     <div className={styles.buttonsWrap}>
       {MOVIE_GENRES.map((genre) => {
@@ -39,7 +46,7 @@ export const FiltersButton = () => {
             key={genre.id}
             type="button"
             aria-pressed={isActive}
-            onClick={() => dispatch(toggleGenreFilter(genre.id))}
+            onClick={() => handleGenreClick(genre.id)}
             className={`button variantSecondary ${styles.genreButton} ${isActive ? styles.genreButtonActive : ''
               }`}
           >

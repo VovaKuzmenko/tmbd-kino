@@ -9,7 +9,9 @@ import { Picture } from '../../../components/picture/Picture'
 import { normalizeRequestError, type RequestError } from '../../../Error/error'
 import { searchResponseSchema } from '../../../api/schemas'
 import { parseApiResponse } from '../../../api/validateResponse'
-
+import { useDispatch } from 'react-redux'
+import type { AppDispatch } from '../../../store/store'
+import { beginExternalRequest, endExternalRequest } from '../../../store/app-slice'
 
 export const MenuSearch = () => {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -24,6 +26,8 @@ export const MenuSearch = () => {
 
   const queryFromUrl = (searchParams.get('q') ?? '').trim()
 
+  const dispatch = useDispatch<AppDispatch>()
+
   const resetSearchState = () => {
     setSearchedQuery('')
     setMovies([])
@@ -36,6 +40,7 @@ export const MenuSearch = () => {
   const fetchMovies = useCallback(async (searchValue: string, targetPage: number) => {
     setStatus('loading')
     setError(null)
+    dispatch(beginExternalRequest())
 
     try {
       const response = await axios.get('https://api.themoviedb.org/3/search/movie', {
@@ -58,8 +63,10 @@ export const MenuSearch = () => {
       setMovies([])
       setStatus('error')
       setError(normalizedError)
+    } finally {
+      dispatch(endExternalRequest())
     }
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     setQuery(queryFromUrl)

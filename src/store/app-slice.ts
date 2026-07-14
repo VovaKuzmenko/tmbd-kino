@@ -28,6 +28,8 @@ type FilmsState = {
   sortType: SortType
   selectedGenres: number[]
   theme: ThemeMode
+  networkRequestsInFlight: number
+  uiTasksInFlight: number
 }
 
 const createFilmSlice = buildCreateSlice({
@@ -123,6 +125,8 @@ const initialState: FilmsState = {
   sortType: 'default',
   selectedGenres: [],
   theme: loadTheme(),
+  networkRequestsInFlight: 0,
+  uiTasksInFlight: 0,
 }
 
 export const filmSlice = createFilmSlice({
@@ -152,6 +156,7 @@ export const filmSlice = createFilmSlice({
           state.status = 'loading'
           state.error = null
           state.FilmCategory = category
+          state.networkRequestsInFlight += 1
         },
         fulfilled: (state, action) => {
           const { category, results } = action.payload
@@ -159,6 +164,7 @@ export const filmSlice = createFilmSlice({
           state.FilmCategory = category
           state.films = results
           applyFiltersAndSort(state)
+          state.networkRequestsInFlight = Math.max(0, state.networkRequestsInFlight - 1)
         },
         rejected: (state, action) => {
           const category = action.meta.arg
@@ -168,6 +174,7 @@ export const filmSlice = createFilmSlice({
             code: 'unknown_error',
             message: 'Unexpected error',
           }
+          state.networkRequestsInFlight = Math.max(0, state.networkRequestsInFlight - 1)
         },
       }
     ),
@@ -253,6 +260,22 @@ export const filmSlice = createFilmSlice({
       state.theme = action.payload
       saveTheme(state.theme)
     }),
+    // Экшены связанные с Linear Progress
+    beginUiTask: create.reducer((state) => {
+      state.uiTasksInFlight += 1
+    }),
+
+    endUiTask: create.reducer((state) => {
+      state.uiTasksInFlight = Math.max(0, state.uiTasksInFlight - 1)
+    }),
+
+    beginExternalRequest: create.reducer((state) => {
+      state.networkRequestsInFlight += 1
+    }),
+
+    endExternalRequest: create.reducer((state) => {
+      state.networkRequestsInFlight = Math.max(0, state.networkRequestsInFlight - 1)
+    }),
   }),
 })
 
@@ -272,6 +295,10 @@ export const {
   removeFavoriteById,
   clearFavorites,
   setTheme,
+  beginUiTask,
+  endUiTask,
+  beginExternalRequest,
+  endExternalRequest,
 } = filmSlice.actions
 
 export const filmReducerSort = filmSlice.reducer
