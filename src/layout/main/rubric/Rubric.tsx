@@ -8,6 +8,7 @@ import styles from './rubric.module.css'
 import { FlexWrapper } from '../../../components/FlexWrapper'
 import { MuviesHeaderRubric } from '../rubric/rubricheadermovies/RubricHeaderMovies'
 import { RubricFilms } from '../../../components/rubricfilms/RubricFilms'
+import { RubricFilmsSkeleton } from '../../../components/rubricfilms/RubricFilmsSkeleton'
 import type { FilmCategory } from './../../../components/types'
 
 type RubricProps = {
@@ -27,22 +28,28 @@ export const Rubric = ({ title, category }: RubricProps) => {
     dispatch(fetchFilms(category))
   }, [dispatch, category])
 
+  const isLoading = status === 'loading'
+
   return (
     <FlexWrapper>
       <StyledRubric className={styles['StyledRubric']}>
         <MuviesHeaderRubric title={title} />
 
-        {category && status === 'loading' && <div>loading...</div>}
 
-        {category && error && (
+        {isLoading && <RubricFilmsSkeleton count={6} />}
+
+
+        {!isLoading && error && ( // ИЗМЕНЕНО
           <div>
             <div>Ошибка: {error.message}</div>
             {error.status && <div>HTTP status: {error.status}</div>}
           </div>
         )}
 
-        {category && status === 'succeeded' && movies.length === 0 && <div>No movies</div>}
-        {movies.length > 0 && <RubricFilms movies={movies.slice(0, 6)} />}
+
+        {!isLoading && !error && movies.length === 0 && <div>No movies</div>}
+
+        {!isLoading && movies.length > 0 && <RubricFilms movies={movies.slice(0, 6)} />}
       </StyledRubric>
     </FlexWrapper>
   )

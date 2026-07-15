@@ -41,6 +41,15 @@ object-fit: cover;
 display: block;
 }
 
+.posterSkeleton { 
+width: 100%; 
+aspect-ratio: 2 / 3; 
+display: block; 
+border-radius: 0; 
+line-height: 1; 
+} 
+
+
 .noPoster {
 width: 100%;
 aspect-ratio: 2 / 3;

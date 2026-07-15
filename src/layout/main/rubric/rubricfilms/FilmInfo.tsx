@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import Skeleton from 'react-loading-skeleton'
 import { IMG_BASE_URL } from './../../../../components/instance/instance'
 import { useFilmInfoData } from './useFilmInfoData'
 import styles from './FilmInfo.module.css'
@@ -18,6 +19,69 @@ const formatRuntime = (minutes: number | null) => {
   const m = minutes % 60
   if (h === 0) return String(m) + ' мин'
   return String(h) + ' ч ' + String(m) + ' мин'
+}
+
+const FilmInfoSkeleton = () => {
+  return (
+    <section className={styles.page}>
+      <div className={styles.hero}>
+        <div className={styles.posterWrap}>
+          <Skeleton className={styles.posterSkeleton} />
+        </div>
+
+        <div className={styles.info}>
+          <div className={styles.topRow}>
+            <Skeleton height={34} width="62%" />
+            <Skeleton height={36} width={90} borderRadius={10} />
+          </div>
+
+          <div className={styles.meta}>
+            <Skeleton width={150} />
+            <Skeleton width={110} />
+            <Skeleton width={140} />
+          </div>
+
+          <p className={styles.overview}>
+            <Skeleton count={4} />
+          </p>
+
+          <p className={styles.genres}>
+            <Skeleton width={220} />
+          </p>
+        </div>
+      </div>
+
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>Актеры</h2>
+        <div className={styles.castGrid}>
+          {Array.from({ length: 6 }).map((_, index) => (
+            <article className={styles.castCard} key={index}>
+              <Skeleton circle width={58} height={58} />
+              <div style={{ width: '100%' }}>
+                <Skeleton width="70%" />
+                <Skeleton width="50%" style={{ marginTop: 6 }} />
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>Похожие фильмы</h2>
+        <div className={styles.similarGrid}>
+          {Array.from({ length: 6 }).map((_, index) => (
+            <article className={styles.similarCard} key={index}>
+              <Skeleton className={styles.similarPosterSkeleton} />
+              <div className={styles.similarBody}>
+                <Skeleton width="75%" />
+                <Skeleton width={24} />
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
 }
 
 export const FilmInfo = () => {
@@ -48,12 +112,9 @@ export const FilmInfo = () => {
     return film.genres.map((g) => g.name).join(', ')
   }, [film])
 
+
   if (isLoading && !film) {
-    return (
-      <section className={styles.page}>
-        <p className={styles.loading}>Загрузка фильма...</p>
-      </section>
-    )
+    return <FilmInfoSkeleton />
   }
 
   if (error) {

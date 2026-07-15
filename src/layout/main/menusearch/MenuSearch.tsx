@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import axios from 'axios'
+import Skeleton from 'react-loading-skeleton'
 import { Search } from '../../../components/search/Search'
 import type { BaseFilmResponse } from '../../../components/types'
 import { IMG_BASE_URL } from '../../../components/instance/instance'
@@ -12,6 +13,8 @@ import { parseApiResponse } from '../../../api/validateResponse'
 import { useDispatch } from 'react-redux'
 import type { AppDispatch } from '../../../store/store'
 import { beginExternalRequest, endExternalRequest } from '../../../store/app-slice'
+
+const SKELETON_CARDS_COUNT = 8
 
 export const MenuSearch = () => {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -122,6 +125,21 @@ export const MenuSearch = () => {
 
       {status === 'idle' && (
         <p className={styles.hint}>Enter a movie title to start searching.</p>
+      )}
+
+      {status === 'loading' && (
+        <div className={styles.grid}>
+          {Array.from({ length: SKELETON_CARDS_COUNT }).map((_, index) => (
+            <article key={index} className={styles.card}>
+              <Skeleton className={styles.posterSkeleton} />
+              <div className={styles.cardBody}>
+                <Skeleton height={20} width="76%" />
+                <Skeleton height={14} width="52%" style={{ marginTop: 8 }} />
+                <Skeleton height={14} width="38%" style={{ marginTop: 6 }} />
+              </div>
+            </article>
+          ))}
+        </div>
       )}
 
       {status === 'error' && error && (

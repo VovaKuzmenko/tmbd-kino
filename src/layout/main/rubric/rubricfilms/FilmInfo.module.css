@@ -55,6 +55,15 @@
   border: 1px solid var(--border);
 }
 
+.posterSkeleton { 
+  width: 180px;
+  height: 270px; 
+  border-radius: 12px; 
+  line-height: 1;
+} 
+
+
+
 .info {
   min-width: 0;
 }
@@ -186,6 +195,15 @@
   display: block;
 }
 
+.similarPosterSkeleton { 
+  width: 100%; 
+  height: 210px;
+  border-radius: 0;
+  line-height: 1; 
+} 
+
+
+
 .similarBody {
   display: flex;
   justify-content: space-between;
@@ -231,6 +249,11 @@
     width: 150px;
     height: 225px;
   }
+
+ .posterSkeleton { 
+    width: 150px; 
+    height: 225px; 
+  } 
 
   .title {
     font-size: 24px;
