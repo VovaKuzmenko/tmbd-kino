@@ -1,8 +1,91 @@
+.page {
+  width: 100%;
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 12px;
+}
 
+.card {
+  width: min(560px, 100%);
+  border: 1px solid #dbe4ef;
+  border-radius: 16px;
+  padding: 24px;
+  background: #ffffff;
+  text-align: center;
+  box-shadow: 0 8px 26px rgba(15, 23, 42, 0.08);
+}
 
+.code {
+  margin: 0;
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 1;
+  color: #dc2626;
+}
 
-.error__style{
-  font-size: 44px;
-  font-weight: 600;
-  color: red;
+.title {
+  margin: 12px 0 8px;
+  font-size: 28px;
+  line-height: 1.2;
+  color: #0f172a;
+}
+
+.text {
+  margin: 0;
+  font-size: 16px;
+  color: #475569;
+}
+
+.actions {
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.primaryButton,
+.secondaryButton {
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 14px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.primaryButton {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.primaryButton:hover {
+  background: #1d4ed8;
+}
+
+.secondaryButton {
+  background: #ffffff;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.secondaryButton:hover {
+  border-color: #94a3b8;
+  background: #f8fafc;
+}
+
+@media (max-width: 560px) {
+  .card {
+    padding: 18px;
+  }
+
+  .code {
+    font-size: 52px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
 }

@@ -8,7 +8,7 @@ import { MenuFilteredMovies } from './layout/main/menufilteredmovies/MenuFiltere
 import { MenuSearch } from './layout/main/menusearch/MenuSearch'
 import { MenuFavorites } from './layout/main/menufavorites/MenuFavorites'
 import { Footer } from './layout/footer/Footer'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import { Error404 } from './components/error404/Error404'
 import { PATHS } from './constans/path'
 import { FilmInfo } from './layout/main/rubric/rubricfilms/FilmInfo'
@@ -60,7 +60,7 @@ function App() {
             <Route path={PATHS.ERROR404} element={<Error404 />} />
             {/* <Route path={PATHS.FILM_INFO} element={<FilmInfo />} /> */}
             <Route path="/film_info/:id" element={<FilmInfo />} />
-            <Route path='*' element={<Navigate to={PATHS.ERROR404} />} />
+            <Route path="*" element={<Error404 />} />
 
           </Routes>
         </main>
