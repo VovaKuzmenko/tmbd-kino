@@ -25,6 +25,7 @@ export const MenuCategoryMuvies = ({ rubrics }: MenuCategoryMuviesProps) => {
           title={currentRubric.title}
           category={currentRubric.category}
           showMoreButton={false}
+          showAllMovies={true}
         />
       </div>
 

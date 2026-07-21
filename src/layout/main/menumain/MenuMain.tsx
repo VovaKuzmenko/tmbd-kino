@@ -24,6 +24,7 @@ export const MenuMain = ({ rubrics }: MenuMainProps) => {
             title={rubric.title}
             category={rubric.category}
             showMoreButton={true}
+            showAllMovies={false}
           />
         ))}
       </div>
