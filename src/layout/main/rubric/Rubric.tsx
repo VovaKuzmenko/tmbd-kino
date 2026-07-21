@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchFilms } from './../../../store/app-slice'
 import type { AppDispatch, RootState } from "./../../../store/store"
@@ -9,11 +9,22 @@ import { FlexWrapper } from '../../../components/FlexWrapper'
 import { MuviesHeaderRubric } from '../rubric/rubricheadermovies/RubricHeaderMovies'
 import { RubricFilms } from '../../../components/rubricfilms/RubricFilms'
 import { RubricFilmsSkeleton } from '../../../components/rubricfilms/RubricFilmsSkeleton'
-import type { FilmCategory } from './../../../components/types'
+import type { BaseFilmResponse, FilmCategory } from './../../../components/types'
 
 type RubricProps = {
   title: string
   category?: FilmCategory
+}
+
+const selectRandomMovies = (movies: BaseFilmResponse[], limit: number) => {
+  const shuffled = [...movies]
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1))
+      ;[shuffled[index], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[index]]
+  }
+
+  return shuffled.slice(0, limit)
 }
 
 export const Rubric = ({ title, category }: RubricProps) => {
@@ -30,6 +41,7 @@ export const Rubric = ({ title, category }: RubricProps) => {
   const movies = category ? categoryState.items : filteredMovies
   const status = categoryState.status
   const error = categoryState.error
+  const visibleMovies = useMemo(() => selectRandomMovies(movies, 6), [movies, activeCategory])
 
   useEffect(() => {
     if (categoryState.status !== 'idle') return
@@ -56,7 +68,7 @@ export const Rubric = ({ title, category }: RubricProps) => {
 
         {!isLoading && !error && movies.length === 0 && <div>No movies</div>}
 
-        {!isLoading && movies.length > 0 && <RubricFilms movies={movies.slice(0, 6)} />}
+        {!isLoading && movies.length > 0 && <RubricFilms movies={visibleMovies} />}
       </StyledRubric>
     </FlexWrapper>
   )
