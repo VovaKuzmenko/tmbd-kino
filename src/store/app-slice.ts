@@ -18,12 +18,16 @@ type SortType =
   | 'titleIncrease'
   | 'titleDecrease'
 
-type FilmsState = {
-  films: BaseFilmResponse[]
-  filteredFilms: BaseFilmResponse[]
-  favorites: BaseFilmResponse[]
+type CategoryState = {
+  items: BaseFilmResponse[]
   status: 'idle' | 'loading' | 'succeeded' | 'failed'
   error: RequestError | null
+}
+
+type FilmsState = {
+  filmsByCategory: Record<FilmCategory, CategoryState>
+  filteredFilms: BaseFilmResponse[]
+  favorites: BaseFilmResponse[]
   FilmCategory: FilmCategory
   sortType: SortType
   selectedGenres: number[]
@@ -38,6 +42,12 @@ const createFilmSlice = buildCreateSlice({
 
 const FAVORITES_KEY = 'tmdb_favorites'
 const THEME_KEY = 'tmdb_theme'
+
+const createCategoryState = (): CategoryState => ({
+  items: [],
+  status: 'idle',
+  error: null,
+})
 
 const loadFavorites = (): BaseFilmResponse[] => {
   if (typeof window === 'undefined') return []
@@ -105,10 +115,12 @@ const sortMovies = (movies: BaseFilmResponse[], sortType: SortType): BaseFilmRes
 }
 
 const applyFiltersAndSort = (state: FilmsState) => {
+  const sourceMovies = state.filmsByCategory[state.FilmCategory].items
+
   const filteredByGenres =
     state.selectedGenres.length === 0
-      ? state.films
-      : state.films.filter((movie) =>
+      ? sourceMovies
+      : sourceMovies.filter((movie) =>
         state.selectedGenres.every((genreId) => movie.genre_ids.includes(genreId))
       )
 
@@ -116,11 +128,14 @@ const applyFiltersAndSort = (state: FilmsState) => {
 }
 
 const initialState: FilmsState = {
-  films: [],
+  filmsByCategory: {
+    popular: createCategoryState(),
+    top_rated: createCategoryState(),
+    upcoming: createCategoryState(),
+    now_playing: createCategoryState(),
+  },
   filteredFilms: [],
   favorites: loadFavorites(),
-  status: 'idle',
-  error: null,
   FilmCategory: 'popular',
   sortType: 'default',
   selectedGenres: [],
@@ -153,24 +168,26 @@ export const filmSlice = createFilmSlice({
       {
         pending: (state, action) => {
           const category = action.meta.arg
-          state.status = 'loading'
-          state.error = null
-          state.FilmCategory = category
+          state.filmsByCategory[category].status = 'loading'
+          state.filmsByCategory[category].error = null
           state.networkRequestsInFlight += 1
         },
         fulfilled: (state, action) => {
           const { category, results } = action.payload
-          state.status = 'succeeded'
-          state.FilmCategory = category
-          state.films = results
-          applyFiltersAndSort(state)
+          state.filmsByCategory[category].status = 'succeeded'
+          state.filmsByCategory[category].items = results
+          state.filmsByCategory[category].error = null
+
+          if (category === state.FilmCategory) {
+            applyFiltersAndSort(state)
+          }
+
           state.networkRequestsInFlight = Math.max(0, state.networkRequestsInFlight - 1)
         },
         rejected: (state, action) => {
           const category = action.meta.arg
-          state.status = 'failed'
-          state.FilmCategory = category
-          state.error = action.payload ?? {
+          state.filmsByCategory[category].status = 'failed'
+          state.filmsByCategory[category].error = action.payload ?? {
             code: 'unknown_error',
             message: 'Unexpected error',
           }
@@ -178,6 +195,11 @@ export const filmSlice = createFilmSlice({
         },
       }
     ),
+
+    setCurrentCategory: create.reducer((state, action: PayloadAction<FilmCategory>) => {
+      state.FilmCategory = action.payload
+      applyFiltersAndSort(state)
+    }),
 
     toggleGenreFilter: create.reducer((state, action: PayloadAction<number>) => {
       const genreId = action.payload
@@ -193,7 +215,7 @@ export const filmSlice = createFilmSlice({
     resetFilters: create.reducer((state) => {
       state.selectedGenres = []
       state.sortType = 'default'
-      state.filteredFilms = [...state.films]
+      applyFiltersAndSort(state)
     }),
 
     sortByPopularityIncrease: create.reducer((state) => {
@@ -260,7 +282,7 @@ export const filmSlice = createFilmSlice({
       state.theme = action.payload
       saveTheme(state.theme)
     }),
-    // Экшены связанные с Linear Progress
+
     beginUiTask: create.reducer((state) => {
       state.uiTasksInFlight += 1
     }),
@@ -281,6 +303,7 @@ export const filmSlice = createFilmSlice({
 
 export const {
   fetchFilms,
+  setCurrentCategory,
   toggleGenreFilter,
   resetFilters,
   sortByPopularityIncrease,

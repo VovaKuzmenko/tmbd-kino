@@ -19,14 +19,24 @@ type RubricProps = {
 export const Rubric = ({ title, category }: RubricProps) => {
   const dispatch = useDispatch<AppDispatch>()
 
-  const movies = useSelector((state: RootState) => state.films.filteredFilms)
-  const status = useSelector((state: RootState) => state.films.status)
-  const error = useSelector((state: RootState) => state.films.error)
+  const currentCategory = useSelector((state: RootState) => state.films.FilmCategory)
+  const activeCategory = category ?? currentCategory
+
+  const categoryState = useSelector(
+    (state: RootState) => state.films.filmsByCategory[activeCategory]
+  )
+  const filteredMovies = useSelector((state: RootState) => state.films.filteredFilms)
+
+  const movies = category ? categoryState.items : filteredMovies
+  const status = categoryState.status
+  const error = categoryState.error
 
   useEffect(() => {
-    if (!category) return
-    dispatch(fetchFilms(category))
-  }, [dispatch, category])
+    if (categoryState.status !== 'idle') return
+    if (categoryState.items.length > 0) return
+
+    dispatch(fetchFilms(activeCategory))
+  }, [dispatch, activeCategory, categoryState.status, categoryState.items.length])
 
   const isLoading = status === 'loading'
 
@@ -35,17 +45,14 @@ export const Rubric = ({ title, category }: RubricProps) => {
       <StyledRubric className={styles['StyledRubric']}>
         <MuviesHeaderRubric title={title} />
 
-
         {isLoading && <RubricFilmsSkeleton count={6} />}
 
-
-        {!isLoading && error && ( // ИЗМЕНЕНО
+        {!isLoading && error && (
           <div>
             <div>Ошибка: {error.message}</div>
             {error.status && <div>HTTP status: {error.status}</div>}
           </div>
         )}
-
 
         {!isLoading && !error && movies.length === 0 && <div>No movies</div>}
 
