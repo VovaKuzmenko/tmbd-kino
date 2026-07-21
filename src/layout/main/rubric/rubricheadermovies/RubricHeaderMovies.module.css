@@ -1,4 +1,50 @@
 .MuviesHeaderRubric{
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.MuviesHeaderRubric h3{
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: inherit;
+  letter-spacing: 0.4px;
+}
+
+.MuviesHeaderRubric__button{
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  color: #f8fafc;
+  padding: 9px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.MuviesHeaderRubric__button:hover{
+  transform: translateY(-1px);
+  border-color: #646cff;
+  background: linear-gradient(135deg, #273449 0%, #172033 100%);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.MuviesHeaderRubric__button:active{
+  transform: translateY(0);
+}
+
+.MuviesHeaderRubric__button:focus{
+  outline: none;
+}
+
+.MuviesHeaderRubric__button:focus-visible{
+  outline: 2px solid #646cff;
+  outline-offset: 3px;
 }

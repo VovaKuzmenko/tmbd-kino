@@ -14,6 +14,7 @@ import type { BaseFilmResponse, FilmCategory } from './../../../components/types
 type RubricProps = {
   title: string
   category?: FilmCategory
+  showMoreButton?: boolean
 }
 
 const selectRandomMovies = (movies: BaseFilmResponse[], limit: number) => {
@@ -27,7 +28,11 @@ const selectRandomMovies = (movies: BaseFilmResponse[], limit: number) => {
   return shuffled.slice(0, limit)
 }
 
-export const Rubric = ({ title, category }: RubricProps) => {
+export const Rubric = ({
+  title,
+  category,
+  showMoreButton = false,
+}: RubricProps) => {
   const dispatch = useDispatch<AppDispatch>()
 
   const currentCategory = useSelector((state: RootState) => state.films.FilmCategory)
@@ -55,7 +60,11 @@ export const Rubric = ({ title, category }: RubricProps) => {
   return (
     <FlexWrapper>
       <StyledRubric className={styles['StyledRubric']}>
-        <MuviesHeaderRubric title={title} />
+        <MuviesHeaderRubric
+          title={title}
+          category={activeCategory}
+          showMoreButton={showMoreButton}
+        />
 
         {isLoading && <RubricFilmsSkeleton count={6} />}
 

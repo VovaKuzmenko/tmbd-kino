@@ -1,0 +1,12 @@
+.menuMain{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rubricsList{
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding-top: 10px;
+}

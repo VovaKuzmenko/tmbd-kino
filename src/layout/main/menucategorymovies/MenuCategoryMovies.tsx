@@ -4,6 +4,7 @@ import { Pagination } from "../../../components/pagination/Pagination"
 import type { RubricItem } from "../../../components/types"
 import { useSelector } from "react-redux"
 import type { RootState } from "../../../store/store"
+import styles from './MenuCategoryMovies.module.css'
 
 type MenuCategoryMuviesProps = {
   rubrics: RubricItem[]
@@ -16,13 +17,17 @@ export const MenuCategoryMuvies = ({ rubrics }: MenuCategoryMuviesProps) => {
     rubrics.find((r) => r.category === currentCategory) ?? rubrics[0]
 
   return (
-    <div>
-
+    <div className={styles.menuCategoryMovies}>
       <RubricTabulation rubrics={rubrics} />
-      <Rubric title={currentRubric.title} category={currentRubric.category} />
-      {/* <Rubric /> */}
-      {/* <Rubric /> */}
-      {/* <Rubric /> */}
+
+      <div className={styles.rubricBlock}>
+        <Rubric
+          title={currentRubric.title}
+          category={currentRubric.category}
+          showMoreButton={false}
+        />
+      </div>
+
       <Pagination />
     </div>
   )

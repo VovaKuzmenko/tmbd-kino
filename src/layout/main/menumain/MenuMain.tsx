@@ -13,18 +13,20 @@ type MenuMainProps = {
 }
 
 export const MenuMain = ({ rubrics }: MenuMainProps) => {
-
   return (
     <div className={styles.menuMain}>
-      {/* <div className={styles.menuMainBackground} aria-hidden='true' /> */}
-      {/* <div className={styles.menuMainContent}> */}
       <WelcomeBlock />
-      {rubrics.map((rubric) => (
-        <Rubric key={rubric.category} title={rubric.title} category={rubric.category} />
-      ))}
-      {/* </div> */}
+
+      <div className={styles.rubricsList}>
+        {rubrics.map((rubric) => (
+          <Rubric
+            key={rubric.category}
+            title={rubric.title}
+            category={rubric.category}
+            showMoreButton={true}
+          />
+        ))}
+      </div>
     </div>
   )
 }
-
-
