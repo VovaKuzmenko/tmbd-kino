@@ -15,6 +15,7 @@ export const Button = ({ title, category }: ButtonProps) => {
   const isActive = currentCategory === category
 
   const handleButtonCategory = () => {
+    if (currentCategory === category) return
     dispatch(setCurrentCategory(category))
     dispatch(fetchFilms(category))
   }
