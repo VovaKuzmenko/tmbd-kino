@@ -1,10 +1,27 @@
-.MenuFilteredMovies__positional__properties{
-  display: flex;
-  flex-direction: column;
-gap: 24px;
-align-items: stretch;
+.layout {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  padding-top: 10px;
 }
 
-.MenuFilteredMovies__FiltersSort{
-  
+.sidebar {
+  position: sticky;
+  top: 96px;
+  align-self: start;
+}
+
+.content {
+  min-width: 0;
+}
+
+@media (max-width: 960px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+  }
 }

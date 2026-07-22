@@ -1,15 +1,17 @@
 import { Rubric } from "../rubric/Rubric"
-import { Pagination } from "../../../components/pagination/Pagination"
 import { FiltersSort } from "./filterssort/fFilterSort"
 import styles from './MenuFilteredMovies.module.css'
 
-
 export const MenuFilteredMovies = () => {
   return (
-    <div className={styles['MenuFilteredMovies__positional__properties']}>
-      <FiltersSort />
-      <Rubric title="Filtered Movies" />
-      <Pagination />
-    </div>
+    <section className={styles.layout}>
+      <aside className={styles.sidebar}>
+        <FiltersSort />
+      </aside>
+
+      <div className={styles.content}>
+        <Rubric title="Filtered Movies" />
+      </div>
+    </section>
   )
 }
