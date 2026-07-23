@@ -17,7 +17,7 @@ export const Button = ({ title, category }: ButtonProps) => {
   const handleButtonCategory = () => {
     if (currentCategory === category) return
     dispatch(setCurrentCategory(category))
-    dispatch(fetchFilms(category))
+    dispatch(fetchFilms({ category, page: 1 }))
   }
 
   return (

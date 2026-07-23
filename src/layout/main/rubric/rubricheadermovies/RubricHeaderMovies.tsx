@@ -24,7 +24,7 @@ export const MuviesHeaderRubric = ({
     if (!category) return
 
     dispatch(setCurrentCategory(category))
-    dispatch(fetchFilms(category))
+    dispatch(fetchFilms({ category, page: 1 }))
     navigate(`${PATHS.CATEGORY}?category=${category}`)
   }
 

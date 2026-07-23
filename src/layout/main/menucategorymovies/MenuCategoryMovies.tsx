@@ -1,6 +1,5 @@
 import { RubricTabulation } from "./rubrictabulation/RubricTabulation"
 import { Rubric } from "../rubric/Rubric"
-import { Pagination } from "../../../components/pagination/Pagination"
 import type { RubricItem } from "../../../components/types"
 import { useEffect, useMemo, useRef } from "react"
 import { useDispatch, useSelector } from "react-redux"
@@ -25,7 +24,6 @@ export const MenuCategoryMuvies = ({ rubrics }: MenuCategoryMuviesProps) => {
     [rubrics]
   )
 
-  // 1) Один раз читаем category из URL при первом входе на страницу
   useEffect(() => {
     if (initializedFromUrlRef.current) return
     initializedFromUrlRef.current = true
@@ -39,11 +37,9 @@ export const MenuCategoryMuvies = ({ rubrics }: MenuCategoryMuviesProps) => {
       return
     }
 
-    // Невалидный/пустой query -> нормализуем URL текущей категорией
     setSearchParams({ category: currentCategory }, { replace: true })
   }, [dispatch, currentCategory, rubricCategories, searchParams, setSearchParams])
 
-  // 2) После инициализации: любое переключение категории пишем в URL
   useEffect(() => {
     if (!initializedFromUrlRef.current) return
     if (searchParams.get('category') === currentCategory) return
@@ -64,11 +60,11 @@ export const MenuCategoryMuvies = ({ rubrics }: MenuCategoryMuviesProps) => {
           category={currentRubric.category}
           showMoreButton={false}
           showAllMovies={true}
+          enablePagination={true}
+          itemsPerPage={20}
           columns={5}
         />
       </div>
-
-      <Pagination />
     </div>
   )
 }

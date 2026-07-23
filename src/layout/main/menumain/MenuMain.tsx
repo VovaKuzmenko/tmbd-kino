@@ -23,10 +23,10 @@ export const MenuMain = ({ rubrics }: MenuMainProps) => {
             key={rubric.category}
             title={rubric.title}
             category={rubric.category}
-            moviesLimit={6}
-            columns={6}
             showMoreButton={true}
             showAllMovies={false}
+            moviesLimit={6}
+            columns={6}
           />
         ))}
       </div>

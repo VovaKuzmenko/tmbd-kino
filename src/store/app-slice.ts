@@ -22,6 +22,8 @@ type CategoryState = {
   items: BaseFilmResponse[]
   status: 'idle' | 'loading' | 'succeeded' | 'failed'
   error: RequestError | null
+  page: number
+  totalPages: number
 }
 
 type FilmsState = {
@@ -48,6 +50,8 @@ const createCategoryState = (): CategoryState => ({
   items: [],
   status: 'idle',
   error: null,
+  page: 1,
+  totalPages: 1,
 })
 
 const loadFavorites = (): BaseFilmResponse[] => {
@@ -156,15 +160,26 @@ export const filmSlice = createFilmSlice({
 
   reducers: (create) => ({
     fetchFilms: create.asyncThunk<
-      { category: FilmCategory; results: BaseFilmResponse[] },
-      FilmCategory,
+      { category: FilmCategory; results: BaseFilmResponse[]; page: number; totalPages: number },
+      { category: FilmCategory; page: number },
       { rejectValue: RequestError }
     >(
-      async (category, { rejectWithValue }) => {
+      async ({ category, page }, { rejectWithValue }) => {
         try {
-          const response = await instance.get('/' + category)
+          const response = await instance.get('/' + category, { params: { page } })
           const parsed = parseApiResponse(filmListResponseSchema, response.data)
-          return { category, results: parsed.results }
+
+          const pageFromApi =
+            typeof response.data?.page === 'number' ? response.data.page : page
+          const totalPagesFromApi =
+            typeof response.data?.total_pages === 'number' ? response.data.total_pages : 1
+
+          return {
+            category,
+            results: parsed.results,
+            page: pageFromApi,
+            totalPages: Math.max(1, totalPagesFromApi),
+          }
         } catch (error: unknown) {
           return rejectWithValue(
             normalizeRequestError(error, 'Failed to load films for ' + category)
@@ -173,15 +188,17 @@ export const filmSlice = createFilmSlice({
       },
       {
         pending: (state, action) => {
-          const category = action.meta.arg
+          const { category } = action.meta.arg
           state.filmsByCategory[category].status = 'loading'
           state.filmsByCategory[category].error = null
           state.networkRequestsInFlight += 1
         },
         fulfilled: (state, action) => {
-          const { category, results } = action.payload
+          const { category, results, page, totalPages } = action.payload
           state.filmsByCategory[category].status = 'succeeded'
           state.filmsByCategory[category].items = results
+          state.filmsByCategory[category].page = page
+          state.filmsByCategory[category].totalPages = totalPages
           state.filmsByCategory[category].error = null
 
           if (category === state.FilmCategory) {
@@ -191,7 +208,7 @@ export const filmSlice = createFilmSlice({
           state.networkRequestsInFlight = Math.max(0, state.networkRequestsInFlight - 1)
         },
         rejected: (state, action) => {
-          const category = action.meta.arg
+          const { category } = action.meta.arg
           state.filmsByCategory[category].status = 'failed'
           state.filmsByCategory[category].error = action.payload ?? {
             code: 'unknown_error',

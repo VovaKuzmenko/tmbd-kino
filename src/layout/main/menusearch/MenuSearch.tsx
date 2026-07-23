@@ -12,7 +12,7 @@ import { useDispatch } from 'react-redux'
 import type { AppDispatch } from '../../../store/store'
 import { beginExternalRequest, endExternalRequest } from '../../../store/app-slice'
 import { RubricFilms } from '../../../components/rubricfilms/RubricFilms'
-
+import { Pagination } from '../../../components/pagination/Pagination'
 
 const SKELETON_CARDS_COUNT = 8
 
@@ -108,9 +108,6 @@ export const MenuSearch = () => {
     setSearchParams({ q: normalizedQuery })
   }
 
-  const canGoPrev = page > 1
-  const canGoNext = page < totalPages
-
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Search Results</h2>
@@ -157,29 +154,11 @@ export const MenuSearch = () => {
         <>
           <RubricFilms movies={movies} columns={5} />
 
-          <div className={styles.pagination}>
-            <button
-              type="button"
-              className={styles.pageButton}
-              onClick={() => handlePageChange(page - 1)}
-              disabled={!canGoPrev}
-            >
-              Prev
-            </button>
-
-            <span className={styles.pageInfo}>
-              Page {page} of {totalPages}
-            </span>
-
-            <button
-              type="button"
-              className={styles.pageButton}
-              onClick={() => handlePageChange(page + 1)}
-              disabled={!canGoNext}
-            >
-              Next
-            </button>
-          </div>
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </>
       )}
     </div>
