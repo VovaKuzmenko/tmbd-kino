@@ -31,6 +31,7 @@ type FilmsState = {
   FilmCategory: FilmCategory
   sortType: SortType
   selectedGenres: number[]
+  minRating: number
   theme: ThemeMode
   networkRequestsInFlight: number
   uiTasksInFlight: number
@@ -124,7 +125,11 @@ const applyFiltersAndSort = (state: FilmsState) => {
         state.selectedGenres.every((genreId) => movie.genre_ids.includes(genreId))
       )
 
-  state.filteredFilms = sortMovies(filteredByGenres, state.sortType)
+  const filteredByRating = filteredByGenres.filter(
+    (movie) => movie.vote_average >= state.minRating
+  )
+
+  state.filteredFilms = sortMovies(filteredByRating, state.sortType)
 }
 
 const initialState: FilmsState = {
@@ -139,6 +144,7 @@ const initialState: FilmsState = {
   FilmCategory: 'popular',
   sortType: 'default',
   selectedGenres: [],
+  minRating: 0,
   theme: loadTheme(),
   networkRequestsInFlight: 0,
   uiTasksInFlight: 0,
@@ -212,9 +218,16 @@ export const filmSlice = createFilmSlice({
       applyFiltersAndSort(state)
     }),
 
+    setMinRating: create.reducer((state, action: PayloadAction<number>) => {
+      const clamped = Math.min(10, Math.max(0, action.payload))
+      state.minRating = clamped
+      applyFiltersAndSort(state)
+    }),
+
     resetFilters: create.reducer((state) => {
       state.selectedGenres = []
       state.sortType = 'default'
+      state.minRating = 0
       applyFiltersAndSort(state)
     }),
 
@@ -305,6 +318,7 @@ export const {
   fetchFilms,
   setCurrentCategory,
   toggleGenreFilter,
+  setMinRating,
   resetFilters,
   sortByPopularityIncrease,
   sortByPopularityDecrease,

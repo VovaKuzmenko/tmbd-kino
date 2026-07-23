@@ -10,7 +10,7 @@ export const MenuFilteredMovies = () => {
       </aside>
 
       <div className={styles.content}>
-        <Rubric title="Filtered Movies" />
+        <Rubric title="" moviesLimit={20} />
       </div>
     </section>
   )

@@ -1,22 +1,15 @@
-import { DropList } from "./droplist/Droplist"
-import { FiltersButton } from "./filtersbutton/FiltersButton"
-import { Reiting } from '../../../../components/reiting/Reiting'
-import { ResetFiltersButton } from "./resetfiltersbutton/ResetFiltersButton"
-
-
+import { DropList } from './droplist/Droplist'
+import { FiltersButton } from './filtersbutton/FiltersButton'
+import { RatingFilter } from './ratingfilter/RatingFilter'
+import { ResetFiltersButton } from './resetfiltersbutton/ResetFiltersButton'
 
 export const FiltersSort = () => {
   return (
     <div>
-      {/* Ниже само название */}
-      <div>Filters / Sort</div>
-      {/* Выпадающий список */}
+      <h3>Filters / Sort</h3>
       <DropList />
-      {/* полоска рейтинга */}
-      <Reiting />
-      {/* фильтрующие кнопки */}
+      <RatingFilter />
       <FiltersButton />
-      {/* кнопка сброса */}
       <ResetFiltersButton />
     </div>
   )

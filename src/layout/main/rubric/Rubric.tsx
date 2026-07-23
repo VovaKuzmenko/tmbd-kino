@@ -16,6 +16,7 @@ type RubricProps = {
   category?: FilmCategory
   showMoreButton?: boolean
   showAllMovies?: boolean
+  moviesLimit?: number
 }
 
 const selectRandomMovies = (movies: BaseFilmResponse[], limit: number) => {
@@ -23,7 +24,7 @@ const selectRandomMovies = (movies: BaseFilmResponse[], limit: number) => {
 
   for (let index = shuffled.length - 1; index > 0; index -= 1) {
     const randomIndex = Math.floor(Math.random() * (index + 1))
-    ;[shuffled[index], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[index]]
+      ;[shuffled[index], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[index]]
   }
 
   return shuffled.slice(0, limit)
@@ -34,6 +35,7 @@ export const Rubric = ({
   category,
   showMoreButton = false,
   showAllMovies = false,
+  moviesLimit = 6,
 }: RubricProps) => {
   const dispatch = useDispatch<AppDispatch>()
 
@@ -49,9 +51,11 @@ export const Rubric = ({
   const status = categoryState.status
   const error = categoryState.error
 
+
+
   const visibleMovies = useMemo(() => {
     if (showAllMovies) return movies
-    return selectRandomMovies(movies, 6)
+    return movies.slice(0, moviesLimit)
   }, [movies, activeCategory, showAllMovies])
 
   useEffect(() => {
@@ -72,7 +76,7 @@ export const Rubric = ({
           showMoreButton={showMoreButton}
         />
 
-        {isLoading && <RubricFilmsSkeleton count={6} />}
+        {isLoading && <RubricFilmsSkeleton count={moviesLimit} />}
 
         {!isLoading && error && (
           <div>

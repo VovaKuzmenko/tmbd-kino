@@ -13,7 +13,7 @@ import {
   beginUiTask,
   endUiTask,
 } from '../../../../../store/app-slice'
-
+import styles from './Droplist.module.css'
 
 export const DropList = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -58,9 +58,9 @@ export const DropList = () => {
   }
 
   return (
-    <div>
+    <div className={styles.block}>
       {/* Выпадающий список непосредственно */}
-
+      <div>Sort by</div>
       <select className="sortSelect" onChange={handleSortChange}>
         <option value="popularityDecrease">Popularity ↓</option>
         <option value="popularityIncrease">Popularity ↑</option>
