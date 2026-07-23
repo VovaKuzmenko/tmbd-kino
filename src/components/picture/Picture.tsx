@@ -1,7 +1,4 @@
-
-import { useState, useEffect } from 'react'
-
-
+import { useEffect, useState } from 'react'
 
 type PictureProps = {
   src: string
@@ -9,6 +6,8 @@ type PictureProps = {
   fallbackSrc?: string
   className?: string
   style?: React.CSSProperties
+  onLoad?: () => void
+  onError?: () => void
 }
 
 const DEFAULT_FALLBACK_SRC = '/no-poster.svg'
@@ -16,33 +15,39 @@ const DEFAULT_FALLBACK_SRC = '/no-poster.svg'
 export const Picture = ({
   src,
   alt,
-  fallbackSrc = DEFAULT_FALLBACK_SRC, // +
-  className, // +
-  style, // +
+  fallbackSrc = DEFAULT_FALLBACK_SRC,
+  className,
+  style,
+  onLoad,
+  onError,
 }: PictureProps) => {
-  const [currentSrc, setCurrentSrc] = useState(src || fallbackSrc) // +
+  const [currentSrc, setCurrentSrc] = useState(src || fallbackSrc)
 
-  useEffect(() => { // +
-    setCurrentSrc(src || fallbackSrc) // +
-  }, [src, fallbackSrc]) // +
+  useEffect(() => {
+    setCurrentSrc(src || fallbackSrc)
+  }, [src, fallbackSrc])
 
   return (
     <img
-      src={currentSrc} // +
+      src={currentSrc}
       alt={alt}
-      className={className} // +
-      onError={() => { // +
-        if (currentSrc !== fallbackSrc) { // +
-          setCurrentSrc(fallbackSrc) // +
-        } // +
-      }} // +
-      style={{ // +
-        width: "100%",
+      className={className}
+      onLoad={() => {
+        onLoad?.()
+      }}
+      onError={() => {
+        if (currentSrc !== fallbackSrc) {
+          setCurrentSrc(fallbackSrc)
+        }
+        onError?.()
+      }}
+      style={{
+        width: '100%',
         height: 320,
-        objectFit: "cover",
-        display: "block",
-        ...style, // +
-      }} // +
+        objectFit: 'cover',
+        display: 'block',
+        ...style,
+      }}
     />
   )
 }

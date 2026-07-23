@@ -1,18 +1,17 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import axios from 'axios'
 import Skeleton from 'react-loading-skeleton'
 import { Search } from '../../../components/search/Search'
 import type { BaseFilmResponse } from '../../../components/types'
-import { IMG_BASE_URL } from '../../../components/instance/instance'
 import styles from './MenuSearch.module.css'
-import { Picture } from '../../../components/picture/Picture'
 import { normalizeRequestError, type RequestError } from '../../../Error/error'
 import { searchResponseSchema } from '../../../api/schemas'
 import { parseApiResponse } from '../../../api/validateResponse'
 import { useDispatch } from 'react-redux'
 import type { AppDispatch } from '../../../store/store'
 import { beginExternalRequest, endExternalRequest } from '../../../store/app-slice'
+import { RubricFilms } from '../../../components/rubricfilms/RubricFilms'
 
 const SKELETON_CARDS_COUNT = 8
 
@@ -155,24 +154,7 @@ export const MenuSearch = () => {
 
       {status === 'success' && movies.length > 0 && (
         <>
-          <div className={styles.grid}>
-            {movies.map((movie) => (
-              <article key={movie.id} className={styles.card}>
-                <Picture
-                  src={movie.poster_path ? `${IMG_BASE_URL} / w342${movie.poster_path}` : '/no-poster.svg'}
-                  alt={movie.title}
-                  fallbackSrc="/no-poster.svg"
-                  className={styles.poster}
-                />
-
-                <div className={styles.cardBody}>
-                  <h3 className={styles.movieTitle}>{movie.title}</h3>
-                  <p className={styles.meta}>Release: {movie.release_date || 'Unknown'}</p>
-                  <p className={styles.meta}>Rating: {movie.vote_average.toFixed(1)}</p>
-                </div>
-              </article>
-            ))}
-          </div>
+          <RubricFilms movies={movies} />
 
           <div className={styles.pagination}>
             <button

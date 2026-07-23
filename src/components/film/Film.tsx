@@ -1,7 +1,7 @@
 import styled from 'styled-components'
-import { Like as FilmCartLike } from "../like/Like"
-import { Picture as FilmCartPicture } from "../picture/Picture"
-import { Reiting as FilmCartReiting } from "../reiting/Reiting"
+import { Like as FilmCartLike } from '../like/Like'
+import { Picture as FilmCartPicture } from '../picture/Picture'
+import { Reiting as FilmCartReiting } from '../reiting/Reiting'
 import { NavLink } from 'react-router-dom'
 import { PATHS } from './../../constans/path'
 
@@ -14,13 +14,12 @@ type FilmProps = {
 }
 
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500'
-const NO_POSTER_URL = '/no-poster.svg'
+const NO_POSTER_URL = 'https://placehold.co/300x450?text=No+Poster'
 
 export const Film = ({ movie, isFavorite, onToggleFavorite }: FilmProps) => {
   const posterUrl = movie.poster_path
     ? IMAGE_BASE_URL + movie.poster_path
     : NO_POSTER_URL
-
 
   return (
     <StyledNavLink to={`${PATHS.FILM_INFO}/${movie.id}`}>
@@ -35,7 +34,11 @@ export const Film = ({ movie, isFavorite, onToggleFavorite }: FilmProps) => {
           <FilmCartLike active={isFavorite} />
         </LikeButtonWrap>
 
-        <FilmCartPicture src={posterUrl} alt={movie.title} />
+        <FilmCartPicture
+          src={posterUrl}
+          alt={movie.title}
+          fallbackSrc={NO_POSTER_URL}
+        />
 
         <BottomRow>
           <Title>{movie.title}</Title>
@@ -43,7 +46,6 @@ export const Film = ({ movie, isFavorite, onToggleFavorite }: FilmProps) => {
         </BottomRow>
       </FilmCart>
     </StyledNavLink>
-
   )
 }
 
@@ -81,4 +83,4 @@ const Title = styled.h3`
   font-size: 14px;
   line-height: 1.3;
   color: #ffffff;
-  `
+`
