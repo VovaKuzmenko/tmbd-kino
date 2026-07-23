@@ -64,6 +64,7 @@ export const MenuCategoryMuvies = ({ rubrics }: MenuCategoryMuviesProps) => {
           category={currentRubric.category}
           showMoreButton={false}
           showAllMovies={true}
+          columns={5}
         />
       </div>
 

@@ -1,19 +1,20 @@
-.positional__properties{
-  display: flex;
+.positional__properties {
+  display: grid;
   gap: 20px;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 40px;
+  align-items: start;
+  justify-content: start;
+  grid-template-columns: repeat(var(--cards-columns, 5), minmax(0, 1fr));
 }
 
-.skeletonCard { 
-  width: 220px; 
-  border-radius: 12px; 
-  overflow: hidden; 
-  border: 1px solid #2b2b2b; 
-  background-color: #121212; 
-} /* ДОБАВЛЕНО */
+.skeletonCard {
+  width: 100%;
+  min-width: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #2b2b2b;
+  background-color: #121212;
+}
 
 .skeletonPoster { 
   width: 100%; 

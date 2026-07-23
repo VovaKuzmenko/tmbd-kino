@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchFilms } from './../../../store/app-slice'
 import type { AppDispatch, RootState } from "./../../../store/store"
@@ -9,7 +9,7 @@ import { FlexWrapper } from '../../../components/FlexWrapper'
 import { MuviesHeaderRubric } from '../rubric/rubricheadermovies/RubricHeaderMovies'
 import { RubricFilms } from '../../../components/rubricfilms/RubricFilms'
 import { RubricFilmsSkeleton } from '../../../components/rubricfilms/RubricFilmsSkeleton'
-import type { BaseFilmResponse, FilmCategory } from './../../../components/types'
+import type { FilmCategory } from './../../../components/types'
 
 type RubricProps = {
   title: string
@@ -17,17 +17,7 @@ type RubricProps = {
   showMoreButton?: boolean
   showAllMovies?: boolean
   moviesLimit?: number
-}
-
-const selectRandomMovies = (movies: BaseFilmResponse[], limit: number) => {
-  const shuffled = [...movies]
-
-  for (let index = shuffled.length - 1; index > 0; index -= 1) {
-    const randomIndex = Math.floor(Math.random() * (index + 1))
-      ;[shuffled[index], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[index]]
-  }
-
-  return shuffled.slice(0, limit)
+  columns?: number
 }
 
 export const Rubric = ({
@@ -36,6 +26,7 @@ export const Rubric = ({
   showMoreButton = false,
   showAllMovies = false,
   moviesLimit = 6,
+  columns = 5,
 }: RubricProps) => {
   const dispatch = useDispatch<AppDispatch>()
 
@@ -51,12 +42,7 @@ export const Rubric = ({
   const status = categoryState.status
   const error = categoryState.error
 
-
-
-  const visibleMovies = useMemo(() => {
-    if (showAllMovies) return movies
-    return movies.slice(0, moviesLimit)
-  }, [movies, activeCategory, showAllMovies])
+  const visibleMovies = showAllMovies ? movies : movies.slice(0, moviesLimit)
 
   useEffect(() => {
     if (categoryState.status !== 'idle') return
@@ -87,7 +73,9 @@ export const Rubric = ({
 
         {!isLoading && !error && movies.length === 0 && <div>No movies</div>}
 
-        {!isLoading && movies.length > 0 && <RubricFilms movies={visibleMovies} />}
+        {!isLoading && movies.length > 0 && (
+          <RubricFilms movies={visibleMovies} columns={columns} />
+        )}
       </StyledRubric>
     </FlexWrapper>
   )

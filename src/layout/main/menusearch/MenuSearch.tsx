@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import axios from 'axios'
 import Skeleton from 'react-loading-skeleton'
@@ -12,6 +12,7 @@ import { useDispatch } from 'react-redux'
 import type { AppDispatch } from '../../../store/store'
 import { beginExternalRequest, endExternalRequest } from '../../../store/app-slice'
 import { RubricFilms } from '../../../components/rubricfilms/RubricFilms'
+
 
 const SKELETON_CARDS_COUNT = 8
 
@@ -154,7 +155,7 @@ export const MenuSearch = () => {
 
       {status === 'success' && movies.length > 0 && (
         <>
-          <RubricFilms movies={movies} />
+          <RubricFilms movies={movies} columns={5} />
 
           <div className={styles.pagination}>
             <button

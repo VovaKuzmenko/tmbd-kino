@@ -1,14 +1,9 @@
-import styled from "styled-components";
+import styles from './fotter.module.css'
 
 export const Footer = () => {
   return (
-    <StyledFooter>
+    <footer className={styles.footer}>
       <p>© 2025 Kinopoisk Demo · Data courtesy of TMDB.</p>
-    </StyledFooter>
+    </footer>
   )
 }
-
-// перенести в отдельный ЦСС модуль
-const StyledFooter = styled.footer`
-  margin-top: auto;
-`;

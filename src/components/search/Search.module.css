@@ -12,7 +12,8 @@
   border-radius: 999px;
 	padding: 0px 0px 0px 74px;
 	background-color: #fff;
-	width: 100%;
+	width:100%;
+  max-width: 460px;
 	font-size: 20px;
 	flex: 1 1 auto;
 

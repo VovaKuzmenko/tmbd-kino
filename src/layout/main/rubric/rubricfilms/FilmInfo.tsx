@@ -112,6 +112,9 @@ export const FilmInfo = () => {
     return film.genres.map((g) => g.name).join(', ')
   }, [film])
 
+  const visibleCast = useMemo(() => {
+    return cast.slice(0, 6)
+  }, [cast])
 
   if (isLoading && !film) {
     return <FilmInfoSkeleton />
@@ -185,7 +188,7 @@ export const FilmInfo = () => {
         <div className={styles.castGrid}>
           {cast.length === 0 && <p className={styles.emptyText}>Список актеров пока пуст.</p>}
 
-          {cast.map((actor) => (
+          {visibleCast.map((actor) => (
             <article className={styles.castCard} key={actor.id}>
               <img
                 className={styles.castAvatar}
