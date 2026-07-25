@@ -1,10 +1,19 @@
 import axios from 'axios'
 import { ZodError } from 'zod'
 
+export type RequestErrorCode =
+  | 'no_network'
+  | 'invalid_auth_token'
+  | 'endpoint_not_found'
+  | 'invalid_response_schema'
+  | 'request_failed'
+  | 'unknown_error'
+
 export type RequestError = {
-  code: string
+  code: RequestErrorCode | string
   message: string
   status?: number
+  details?: string
 }
 
 export type RequestState<TData> = {
@@ -33,16 +42,14 @@ const formatZodIssues = (error: ZodError, maxIssues = 3): string => {
 
 export const normalizeRequestError = (
   error: unknown,
-  fallbackMessage = 'Request failed'
+  fallbackMessage = 'Ошибка запроса'
 ): RequestError => {
   if (error instanceof ZodError) {
     const details = formatZodIssues(error)
-
     return {
       code: 'invalid_response_schema',
-      message: details
-        ? 'Invalid server response format. ' + details
-        : 'Invalid server response format.',
+      message: 'Сервер вернул данные в неожиданном формате.',
+      details: details || undefined,
     }
   }
 
@@ -55,17 +62,43 @@ export const normalizeRequestError = (
         ? error.response.data.status_message
         : null
 
+    const status = error.response?.status
+
+    if (!error.response || error.code === 'ERR_NETWORK') {
+      return {
+        code: 'no_network',
+        message: 'Нет сети или сервер недоступен. Проверьте интернет-соединение.',
+      }
+    }
+
+    if (status === 401 || status === 403) {
+      return {
+        code: 'invalid_auth_token',
+        status,
+        message:
+          apiMessage ?? 'Проблема авторизации TMDB: проверьте AUTH_TOKEN/API key.',
+      }
+    }
+
+    if (status === 404) {
+      return {
+        code: 'endpoint_not_found',
+        status,
+        message: apiMessage ?? 'Endpoint не найден (404). Проверьте URL и baseURL запроса.',
+      }
+    }
+
     return {
       code: error.code ?? 'request_failed',
+      status,
       message: apiMessage ?? error.message ?? fallbackMessage,
-      status: error.response?.status,
     }
   }
 
   if (error instanceof Error) {
     return {
       code: 'unknown_error',
-      message: error.message,
+      message: error.message || fallbackMessage,
     }
   }
 

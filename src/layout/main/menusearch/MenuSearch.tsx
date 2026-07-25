@@ -5,7 +5,8 @@ import Skeleton from 'react-loading-skeleton'
 import { Search } from '../../../components/search/Search'
 import type { BaseFilmResponse } from '../../../components/types'
 import styles from './MenuSearch.module.css'
-import { normalizeRequestError, type RequestError } from '../../../Error/error'
+import type { RequestError } from '../../../Error/error'
+import { pushRequestErrorToast } from '../../../shared/notifications'
 import { searchResponseSchema } from '../../../api/schemas'
 import { parseApiResponse } from '../../../api/validateResponse'
 import { useDispatch } from 'react-redux'
@@ -62,7 +63,11 @@ export const MenuSearch = () => {
       setTotalPages(Math.max(1, parsed.total_pages ?? 1))
       setStatus('success')
     } catch (error: unknown) {
-      const normalizedError = normalizeRequestError(error, 'Не удалось загрузить результаты поиска')
+      const normalizedError = pushRequestErrorToast(
+        error,
+        'Не удалось загрузить результаты поиска',
+        'Ошибка поиска'
+      )
       setMovies([])
       setStatus('error')
       setError(normalizedError)

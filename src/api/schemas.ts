@@ -20,6 +20,8 @@ export const baseFilmSchema = z.object({
 })
 
 export const filmListResponseSchema = z.object({
+  page: z.number(),
+  total_pages: z.number(),
   results: z.array(baseFilmSchema),
 })
 

@@ -169,10 +169,8 @@ export const filmSlice = createFilmSlice({
           const response = await instance.get('/' + category, { params: { page } })
           const parsed = parseApiResponse(filmListResponseSchema, response.data)
 
-          const pageFromApi =
-            typeof response.data?.page === 'number' ? response.data.page : page
-          const totalPagesFromApi =
-            typeof response.data?.total_pages === 'number' ? response.data.total_pages : 1
+          const pageFromApi = parsed.page
+          const totalPagesFromApi = parsed.total_pages
 
           return {
             category,

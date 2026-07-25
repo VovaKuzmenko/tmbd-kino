@@ -5,7 +5,8 @@ import styles from './WelcomeBlock.module.css'
 import { Search } from '../../components/search/Search'
 import instance, { IMG_BASE_URL } from '../../components/instance/instance'
 import { PATHS } from '../../constans/path'
-import { normalizeRequestError, type RequestError } from '../../Error/error'
+import type { RequestError } from '../../Error/error'
+import { pushRequestErrorToast } from '../../shared/notifications'
 import { filmListResponseSchema } from '../../api/schemas'
 import { parseApiResponse } from '../../api/validateResponse'
 
@@ -59,7 +60,11 @@ export const WelcomeBlock = () => {
 
         setHeroImage('')
         setHeroError(
-          normalizeRequestError(error, 'Не удалось загрузить фоновое изображение')
+          pushRequestErrorToast(
+            error,
+            'Не удалось загрузить фоновое изображение',
+            'Ошибка загрузки фона'
+          )
         )
       }
     }

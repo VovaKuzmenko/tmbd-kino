@@ -5,11 +5,8 @@ import {
   type FilmDetails,
   type SimilarMovie,
 } from '../../../../api/filmInfoApi'
-import {
-  createInitialRequestState,
-  normalizeRequestError,
-  type RequestState,
-} from '../../../../Error/error.ts'
+import { createInitialRequestState, type RequestState } from '../../../../Error/error.ts'
+import { pushRequestErrorToast } from '../../../../shared/notifications'
 
 type FilmInfoData = {
   film: FilmDetails | null
@@ -60,7 +57,7 @@ export const useFilmInfoData = (movieId: string) => {
           data: initialData,
           isLoading: false,
           isError: true,
-          error: normalizeRequestError(error, 'Failed to fetch film info'),
+          error: pushRequestErrorToast(error, 'Failed to fetch film info', 'Ошибка фильма'),
         })
       }
     }
