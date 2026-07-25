@@ -7,6 +7,7 @@ export type RequestErrorCode =
   | 'endpoint_not_found'
   | 'invalid_response_schema'
   | 'request_failed'
+  | 'storage_unavailable'
   | 'unknown_error'
 
 export type RequestError = {
@@ -46,6 +47,7 @@ export const normalizeRequestError = (
 ): RequestError => {
   if (error instanceof ZodError) {
     const details = formatZodIssues(error)
+
     return {
       code: 'invalid_response_schema',
       message: 'Сервер вернул данные в неожиданном формате.',
@@ -56,9 +58,9 @@ export const normalizeRequestError = (
   if (axios.isAxiosError(error)) {
     const apiMessage =
       typeof error.response?.data === 'object' &&
-        error.response?.data &&
-        'status_message' in error.response.data &&
-        typeof error.response.data.status_message === 'string'
+      error.response?.data &&
+      'status_message' in error.response.data &&
+      typeof error.response.data.status_message === 'string'
         ? error.response.data.status_message
         : null
 
@@ -75,8 +77,7 @@ export const normalizeRequestError = (
       return {
         code: 'invalid_auth_token',
         status,
-        message:
-          apiMessage ?? 'Проблема авторизации TMDB: проверьте AUTH_TOKEN/API key.',
+        message: apiMessage ?? 'Проблема авторизации TMDB: проверьте AUTH_TOKEN/API key.',
       }
     }
 

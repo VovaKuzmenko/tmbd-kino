@@ -2,6 +2,7 @@ import { buildCreateSlice, asyncThunkCreator, type PayloadAction } from '@reduxj
 import type { BaseFilmResponse, FilmCategory } from '../components/types/types.ts'
 import instance from './../components/instance/instance'
 import { normalizeRequestError, type RequestError } from '../Error/error'
+import { pushStorageErrorToast } from '../shared/notifications'
 import { filmListResponseSchema } from '../api/schemas'
 import { parseApiResponse } from '../api/validateResponse'
 
@@ -59,7 +60,8 @@ const loadFavorites = (): BaseFilmResponse[] => {
   try {
     const raw = localStorage.getItem(FAVORITES_KEY)
     return raw ? JSON.parse(raw) : []
-  } catch {
+  } catch (error: unknown) {
+    pushStorageErrorToast('прочитать избранное из localStorage', error)
     return []
   }
 }
@@ -68,7 +70,8 @@ const saveFavorites = (favorites: BaseFilmResponse[]) => {
   if (typeof window === 'undefined') return
   try {
     localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites))
-  } catch {
+  } catch (error: unknown) {
+    pushStorageErrorToast('сохранить избранное в localStorage', error)
   }
 }
 
@@ -77,7 +80,8 @@ const loadTheme = (): ThemeMode => {
   try {
     const raw = localStorage.getItem(THEME_KEY)
     return raw === 'dark' ? 'dark' : 'light'
-  } catch {
+  } catch (error: unknown) {
+    pushStorageErrorToast('прочитать тему из localStorage', error)
     return 'light'
   }
 }
@@ -86,7 +90,8 @@ const saveTheme = (theme: ThemeMode) => {
   if (typeof window === 'undefined') return
   try {
     localStorage.setItem(THEME_KEY, theme)
-  } catch {
+  } catch (error: unknown) {
+    pushStorageErrorToast('сохранить тему в localStorage', error)
   }
 }
 

@@ -11,7 +11,7 @@ export type ToastPayload = {
 }
 
 const TOAST_EVENT = 'app:toast'
-const DEDUPE_WINDOW_MS = 1800
+const DEDUPE_WINDOW_MS = 1500
 
 let lastToastMessage = ''
 let lastToastAt = 0
@@ -56,6 +56,19 @@ export const pushRequestErrorToast = (
   })
 
   return normalized
+}
+
+export const pushStorageErrorToast = (actionName: string, error: unknown) => {
+  const message =
+    error instanceof Error
+      ? 'Не удалось ' + actionName + ': ' + error.message
+      : 'Не удалось ' + actionName + '. Локальное хранилище недоступно.'
+
+  pushToast({
+    kind: 'error',
+    title: 'Локальное хранилище',
+    message,
+  })
 }
 
 export const toastEventName = TOAST_EVENT

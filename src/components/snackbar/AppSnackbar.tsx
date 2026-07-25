@@ -15,9 +15,7 @@ export const AppSnackbar = () => {
     }
 
     window.addEventListener(toastEventName, handler as EventListener)
-    return () => {
-      window.removeEventListener(toastEventName, handler as EventListener)
-    }
+    return () => window.removeEventListener(toastEventName, handler as EventListener)
   }, [])
 
   useEffect(() => {
@@ -30,7 +28,7 @@ export const AppSnackbar = () => {
     )
 
     return () => {
-      timers.forEach((timerId) => window.clearTimeout(timerId))
+      timers.forEach((id) => window.clearTimeout(id))
     }
   }, [items])
 

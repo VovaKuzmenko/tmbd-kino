@@ -21,7 +21,7 @@ const errorToastMiddleware: Middleware = () => (next) => (action) => {
       title: 'Ошибка запроса',
       message,
     })
-  } else if (isRejected(action)) {
+  } else if (isRejected(action) && !action.meta?.aborted) {
     pushToast({
       kind: 'error',
       title: 'Ошибка',
