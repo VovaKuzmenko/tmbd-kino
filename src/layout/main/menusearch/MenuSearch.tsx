@@ -5,7 +5,6 @@ import Skeleton from 'react-loading-skeleton'
 import { Search } from '../../../components/search/Search'
 import type { BaseFilmResponse } from '../../../components/types'
 import styles from './MenuSearch.module.css'
-import type { RequestError } from '../../../Error/error'
 import { pushRequestErrorToast } from '../../../shared/notifications'
 import { searchResponseSchema } from '../../../api/schemas'
 import { parseApiResponse } from '../../../api/validateResponse'
@@ -23,10 +22,9 @@ export const MenuSearch = () => {
   const [query, setQuery] = useState('')
   const [searchedQuery, setSearchedQuery] = useState('')
   const [movies, setMovies] = useState<BaseFilmResponse[]>([])
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle')
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const [error, setError] = useState<RequestError | null>(null)
 
   const queryFromUrl = (searchParams.get('q') ?? '').trim()
 
@@ -38,12 +36,11 @@ export const MenuSearch = () => {
     setStatus('idle')
     setPage(1)
     setTotalPages(1)
-    setError(null)
+    // setError(null)
   }
 
   const fetchMovies = useCallback(async (searchValue: string, targetPage: number) => {
     setStatus('loading')
-    setError(null)
     dispatch(beginExternalRequest())
 
     try {
@@ -63,14 +60,14 @@ export const MenuSearch = () => {
       setTotalPages(Math.max(1, parsed.total_pages ?? 1))
       setStatus('success')
     } catch (error: unknown) {
-      const normalizedError = pushRequestErrorToast(
+
+      pushRequestErrorToast(
         error,
-        'Не удалось загрузить результаты поиска',
-        'Ошибка поиска'
+        'Failed to load search results',
+        'Search Error'
       )
       setMovies([])
-      setStatus('error')
-      setError(normalizedError)
+      setStatus('success')
     } finally {
       dispatch(endExternalRequest())
     }
@@ -143,14 +140,6 @@ export const MenuSearch = () => {
           ))}
         </div>
       )}
-
-      {status === 'error' && error && (
-        <div className={styles.hint}>
-          <p>{error.message}</p>
-          {error.status && <p>HTTP status: {error.status}</p>}
-        </div>
-      )}
-
       {status === 'success' && movies.length === 0 && (
         <p className={styles.hint}>No matches found for "{searchedQuery}"</p>
       )}

@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchFilms } from './../../../store/app-slice'
-import type { AppDispatch, RootState } from "./../../../store/store"
-
+import { beginUiTask, endUiTask, fetchFilms } from './../../../store/app-slice'
+import type { AppDispatch, RootState } from './../../../store/store'
 import styled from 'styled-components'
 import styles from './rubric.module.css'
 import { FlexWrapper } from '../../../components/FlexWrapper'
@@ -46,7 +45,6 @@ export const Rubric = ({
 
   const movies = category ? categoryState.items : filteredMovies
   const status = categoryState.status
-  const error = categoryState.error
 
   const isCategoryServerPagination = Boolean(category && showAllMovies && enablePagination)
   const isFilteredClientPagination = Boolean(!category && showAllMovies && enablePagination)
@@ -111,7 +109,9 @@ export const Rubric = ({
       return
     }
 
+    dispatch(beginUiTask())
     setFilteredPage(nextPage)
+    requestAnimationFrame(() => dispatch(endUiTask()))
   }
 
   return (
@@ -125,14 +125,7 @@ export const Rubric = ({
 
         {isLoading && <RubricFilmsSkeleton count={showAllMovies ? itemsPerPage : moviesLimit} />}
 
-        {!isLoading && error && (
-          <div>
-            <div>Ошибка: {error.message}</div>
-            {error.status && <div>HTTP status: {error.status}</div>}
-          </div>
-        )}
-
-        {!isLoading && !error && movies.length === 0 && <div>No movies</div>}
+        {!isLoading && !categoryState.error && movies.length === 0 && <div>No movies</div>}
 
         {!isLoading && movies.length > 0 && (
           <>

@@ -5,16 +5,12 @@ import styles from './WelcomeBlock.module.css'
 import { Search } from '../../components/search/Search'
 import instance, { IMG_BASE_URL } from '../../components/instance/instance'
 import { PATHS } from '../../constans/path'
-import type { RequestError } from '../../Error/error'
-import { pushRequestErrorToast } from '../../shared/notifications'
+import { pushRequestErrorToast, pushToast } from '../../shared/notifications'
 import { filmListResponseSchema } from '../../api/schemas'
 import { parseApiResponse } from '../../api/validateResponse'
 
-
-
 export const WelcomeBlock = () => {
   const [heroImage, setHeroImage] = useState('')
-  const [heroError, setHeroError] = useState<RequestError | null>(null)
   const [query, setQuery] = useState('')
   const navigate = useNavigate()
 
@@ -22,8 +18,6 @@ export const WelcomeBlock = () => {
     let isActive = true
 
     const loadRandomPopularHero = async () => {
-      setHeroError(null)
-
       try {
         const randomPage = Math.floor(Math.random() * 500) + 1
 
@@ -36,9 +30,11 @@ export const WelcomeBlock = () => {
 
         const movies = parsed.results ?? []
         if (!movies.length) {
-          setHeroError({
-            code: 'empty_results',
-            message: 'Не удалось подобрать фильм для фонового изображения',
+          setHeroImage('')
+          pushToast({
+            kind: 'error',
+            title: 'Background Error',
+            message: 'Unable to find a movie for the background image.',
           })
           return
         }
@@ -47,9 +43,11 @@ export const WelcomeBlock = () => {
         const imagePath = randomMovie.backdrop_path || randomMovie.poster_path
 
         if (!imagePath) {
-          setHeroError({
-            code: 'missing_image',
-            message: 'У выбранного фильма нет фонового изображения',
+          setHeroImage('')
+          pushToast({
+            kind: 'error',
+            title: 'Background Error',
+            message: 'The selected movie does not have a background image.',
           })
           return
         }
@@ -59,12 +57,10 @@ export const WelcomeBlock = () => {
         if (!isActive) return
 
         setHeroImage('')
-        setHeroError(
-          pushRequestErrorToast(
-            error,
-            'Не удалось загрузить фоновое изображение',
-            'Ошибка загрузки фона'
-          )
+        pushRequestErrorToast(
+          error,
+          'Failed to load background image',
+          'Background Error'
         )
       }
     }
@@ -90,7 +86,7 @@ export const WelcomeBlock = () => {
   return (
     <StyledMain className={styles.StyledMain}>
       <div className={styles.imageLayer}>
-        {heroImage && <img src={heroImage} alt="картинка на весь экран" />}
+        {heroImage && <img src={heroImage} alt='full screen picture' />}
       </div>
 
       <div className={styles.content}>
@@ -103,8 +99,6 @@ export const WelcomeBlock = () => {
           onSubmit={handleSubmit}
           onClear={handleClear}
         />
-
-        {heroError && <p>{heroError.message}</p>}
       </div>
     </StyledMain>
   )
@@ -112,3 +106,4 @@ export const WelcomeBlock = () => {
 
 const StyledMain = styled.section`
 `
+

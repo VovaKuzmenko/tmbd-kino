@@ -43,14 +43,14 @@ const formatZodIssues = (error: ZodError, maxIssues = 3): string => {
 
 export const normalizeRequestError = (
   error: unknown,
-  fallbackMessage = 'Ошибка запроса'
+  fallbackMessage = 'Request error'
 ): RequestError => {
   if (error instanceof ZodError) {
     const details = formatZodIssues(error)
 
     return {
       code: 'invalid_response_schema',
-      message: 'Сервер вернул данные в неожиданном формате.',
+      message: 'Server returned data in an unexpected format',
       details: details || undefined,
     }
   }
@@ -58,9 +58,9 @@ export const normalizeRequestError = (
   if (axios.isAxiosError(error)) {
     const apiMessage =
       typeof error.response?.data === 'object' &&
-      error.response?.data &&
-      'status_message' in error.response.data &&
-      typeof error.response.data.status_message === 'string'
+        error.response?.data &&
+        'status_message' in error.response.data &&
+        typeof error.response.data.status_message === 'string'
         ? error.response.data.status_message
         : null
 
@@ -69,7 +69,7 @@ export const normalizeRequestError = (
     if (!error.response || error.code === 'ERR_NETWORK') {
       return {
         code: 'no_network',
-        message: 'Нет сети или сервер недоступен. Проверьте интернет-соединение.',
+        message: 'No network connection or server is unavailable. Check your internet connection',
       }
     }
 
@@ -77,7 +77,7 @@ export const normalizeRequestError = (
       return {
         code: 'invalid_auth_token',
         status,
-        message: apiMessage ?? 'Проблема авторизации TMDB: проверьте AUTH_TOKEN/API key.',
+        message: apiMessage ?? 'TMDB authorization failed. Check AUTH_TOKEN or API key.',
       }
     }
 
@@ -85,7 +85,7 @@ export const normalizeRequestError = (
       return {
         code: 'endpoint_not_found',
         status,
-        message: apiMessage ?? 'Endpoint не найден (404). Проверьте URL и baseURL запроса.',
+        message: apiMessage ?? 'Endpoint not found (404). Check request URL and baseURL',
       }
     }
 

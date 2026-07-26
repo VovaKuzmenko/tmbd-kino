@@ -20,7 +20,7 @@ import type { RootState } from './store/store'
 import { LinearProgress } from './components/linearprogress/LinearProgress'
 import { SkeletonTheme } from 'react-loading-skeleton'
 // import { toggleTheme } from './store/app-slice'
-import { AppSnackbar } from './components/snackbar/AppSnackbar'
+import { UniversalErrorNotification } from './components/notification/UniversalErrorNotification'
 
 
 const rubrics: Array<{ title: string; category: FilmCategory }> = [
@@ -46,7 +46,7 @@ function App() {
       {/* Это основной блок - майн, на каждую кнопку должен быть свой */}
       <div className={styles.container}>
         <LinearProgress />
-<AppSnackbar />
+        <UniversalErrorNotification />
         <Header />
         {/* main-оберткуа для прилипания  Header и Footer*/}
         <main className={styles.main}>

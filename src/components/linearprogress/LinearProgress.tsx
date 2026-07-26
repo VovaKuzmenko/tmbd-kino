@@ -5,8 +5,8 @@ import styles from './LinearProgress.module.css'
 export const LinearProgress = () => {
   const isVisible = useSelector((state: RootState) => {
     const filmsState = state.films
+
     return (
-      filmsState.status === 'loading' ||
       filmsState.networkRequestsInFlight > 0 ||
       filmsState.uiTasksInFlight > 0
     )

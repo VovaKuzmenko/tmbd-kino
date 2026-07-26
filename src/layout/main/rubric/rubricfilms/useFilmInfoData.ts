@@ -57,7 +57,11 @@ export const useFilmInfoData = (movieId: string) => {
           data: initialData,
           isLoading: false,
           isError: true,
-          error: pushRequestErrorToast(error, 'Failed to fetch film info', 'Ошибка фильма'),
+          error: pushRequestErrorToast(
+            error,
+            'Failed to fetch movie details',
+            'Movie Error'
+          ),
         })
       }
     }
