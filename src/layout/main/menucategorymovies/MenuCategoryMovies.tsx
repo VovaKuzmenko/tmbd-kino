@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux"
 import type { AppDispatch, RootState } from "../../../store/store"
 import { setCurrentCategory } from "../../../store/app-slice"
 import { useSearchParams } from "react-router-dom"
-import styles from './MenuCategoryMovies.module.css'
+import styles from './menucategorymovies.module.css'
 
 type MenuCategoryMuviesProps = {
   rubrics: RubricItem[]
