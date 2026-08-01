@@ -8,7 +8,7 @@ export const Logo = () => {
 
     < a href="/" >
       {/* Логотип - картинка вставить от  сюда  */}
-      <img src="../../../public/logo-short.svg" alt="Logo" className={style.logoshort} />
+      <img src="/logo-short.svg" alt="Logo" className={style.logoshort} />
     </a >
     // </div>
 
