@@ -28,11 +28,17 @@ export const Menu = () => {
   )
 }
 
-// не забываем импортировать библиотеки и 
-// при работе с TypeScript,  также установить типы
 const StyledMenu = styled.nav`
 ul {
+list-style: none;
 display: flex;
 gap: 30px;
+}
+
+li::before {
+  content: "|| ";   
+  letter-spacing: 2px; 
+  margin-right: 20px; 
+  color: #007bff;    
 }
 `
