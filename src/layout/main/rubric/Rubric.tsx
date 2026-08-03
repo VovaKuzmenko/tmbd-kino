@@ -1,6 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
+// import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { beginUiTask, endUiTask, fetchFilms } from './../../../store/app-slice'
+// import { beginUiTask, endUiTask, fetchFilms } from './../../../store/app-slice'
+import { fetchFilms } from './../../../store/app-slice'
 import type { AppDispatch, RootState } from './../../../store/store'
 import styled from 'styled-components'
 import styles from './rubric.module.css'
@@ -33,7 +35,7 @@ export const Rubric = ({
   itemsPerPage = 20,
 }: RubricProps) => {
   const dispatch = useDispatch<AppDispatch>()
-  const [filteredPage, setFilteredPage] = useState(1)
+  // const [filteredPage, setFilteredPage] = useState(1)
 
   const currentCategory = useSelector((state: RootState) => state.films.FilmCategory)
   const activeCategory = category ?? currentCategory
@@ -46,39 +48,41 @@ export const Rubric = ({
   const movies = category ? categoryState.items : filteredMovies
   const status = categoryState.status
 
-  const isCategoryServerPagination = Boolean(category && showAllMovies && enablePagination)
-  const isFilteredClientPagination = Boolean(!category && showAllMovies && enablePagination)
+  // const isCategoryServerPagination = Boolean(category && showAllMovies && enablePagination)
+  // const isFilteredClientPagination = Boolean(!category && showAllMovies && enablePagination)
 
-  const filteredTotalPages = useMemo(() => {
-    if (!isFilteredClientPagination) return 1
-    return Math.max(1, Math.ceil(filteredMovies.length / itemsPerPage))
-  }, [filteredMovies.length, isFilteredClientPagination, itemsPerPage])
+  // const filteredTotalPages = useMemo(() => {
+  //   if (!isFilteredClientPagination) return 1
+  //   return Math.max(1, Math.ceil(filteredMovies.length / itemsPerPage))
+  // }, [filteredMovies.length, isFilteredClientPagination, itemsPerPage])
+  const isServerPagination = Boolean(showAllMovies && enablePagination)
 
   const visibleMovies = useMemo(() => {
     if (!showAllMovies) {
       return movies.slice(0, moviesLimit)
     }
 
-    if (isCategoryServerPagination) {
-      return movies
-    }
+    // if (isCategoryServerPagination) {
+    //   return movies
+    // }
 
-    if (isFilteredClientPagination) {
-      const startIndex = (filteredPage - 1) * itemsPerPage
-      return filteredMovies.slice(startIndex, startIndex + itemsPerPage)
-    }
+    // if (isFilteredClientPagination) {
+    //   const startIndex = (filteredPage - 1) * itemsPerPage
+    //   return filteredMovies.slice(startIndex, startIndex + itemsPerPage)
+    // }
 
     return movies
-  }, [
-    showAllMovies,
-    movies,
-    moviesLimit,
-    isCategoryServerPagination,
-    isFilteredClientPagination,
-    filteredPage,
-    itemsPerPage,
-    filteredMovies,
-  ])
+    // }, [
+    // showAllMovies,
+    // movies,
+    // moviesLimit,
+    // isCategoryServerPagination,
+    // isFilteredClientPagination,
+    // filteredPage,
+    // itemsPerPage,
+    // filteredMovies,
+    // ])
+  }, [showAllMovies, movies, moviesLimit])
 
   useEffect(() => {
     if (categoryState.status !== 'idle') return
@@ -87,31 +91,35 @@ export const Rubric = ({
     dispatch(fetchFilms({ category: activeCategory, page: 1 }))
   }, [dispatch, activeCategory, categoryState.status, categoryState.items.length])
 
-  useEffect(() => {
-    setFilteredPage(1)
-  }, [activeCategory, filteredMovies.length, isFilteredClientPagination])
+  // useEffect(() => {
+  //   setFilteredPage(1)
+  // }, [activeCategory, filteredMovies.length, isFilteredClientPagination])
 
-  useEffect(() => {
-    if (filteredPage <= filteredTotalPages) return
-    setFilteredPage(filteredTotalPages)
-  }, [filteredPage, filteredTotalPages])
+  // useEffect(() => {
+  //   if (filteredPage <= filteredTotalPages) return
+  //   setFilteredPage(filteredTotalPages)
+  // }, [filteredPage, filteredTotalPages])
 
   const isLoading = status === 'loading'
 
-  const currentPage = isCategoryServerPagination ? categoryState.page : filteredPage
-  const totalPages = isCategoryServerPagination ? categoryState.totalPages : filteredTotalPages
+  // const currentPage = isCategoryServerPagination ? categoryState.page : filteredPage
+  // const totalPages = isCategoryServerPagination ? categoryState.totalPages : filteredTotalPages
+
+  const currentPage = isServerPagination ? categoryState.page : 1
+  const totalPages = isServerPagination ? categoryState.totalPages : 1
 
   const handlePageChange = (nextPage: number) => {
     if (nextPage < 1 || nextPage > totalPages || nextPage === currentPage) return
 
-    if (isCategoryServerPagination) {
+    // if (isCategoryServerPagination) {
+    if (isServerPagination) {
       dispatch(fetchFilms({ category: activeCategory, page: nextPage }))
       return
     }
 
-    dispatch(beginUiTask())
-    setFilteredPage(nextPage)
-    requestAnimationFrame(() => dispatch(endUiTask()))
+    // dispatch(beginUiTask())
+    // setFilteredPage(nextPage)
+    // requestAnimationFrame(() => dispatch(endUiTask()))
   }
 
   return (
