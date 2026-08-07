@@ -11,7 +11,6 @@ export const PATHS = {
 } as const
 
 
-// Массив для меню навигации (НАШИ КНОПОЧКИ В ВИДЕ ОБЪЕКТОВ)
 export const menuItems = [
   { id: 1, path: PATHS.MAIN, label: 'Main' },
   { id: 2, path: PATHS.CATEGORY, label: 'Category movies' },

@@ -12,12 +12,6 @@ export const RatingFilter = () => {
   const minRating = useSelector((state: RootState) => state.films.minRating)
   const [draftRating, setDraftRating] = useState(minRating)
 
-  // const applyRating = (value: number) => {
-  //   dispatch(beginUiTask())
-  //   dispatch(setMinRating(value))
-  //   requestAnimationFrame(() => dispatch(endUiTask()))
-  // }
-
   useEffect(() => {
     setDraftRating(minRating)
   }, [minRating])
@@ -45,7 +39,6 @@ export const RatingFilter = () => {
 
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    // applyRating(Number(event.target.value))
     setDraftRating(Number(event.target.value))
   }
 
@@ -53,7 +46,7 @@ export const RatingFilter = () => {
     <section className={styles.block}>
       <div className={styles.row}>
         <span className={styles.label}>Rating</span>
-        {/* <span className={styles.value}>{minRating.toFixed(1)} - 10</span> */}
+
         <span className={styles.value}>{draftRating.toFixed(1)} - 10</span>
       </div>
 
@@ -63,7 +56,6 @@ export const RatingFilter = () => {
         min={0}
         max={10}
         step={0.1}
-        // value={minRating}
         value={draftRating}
         onChange={handleChange}
       />

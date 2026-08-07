@@ -4,14 +4,8 @@ import { NavLink } from 'react-router-dom'
 import { menuItems } from '../../constans/path'
 
 
-// TODO что-то не работает - ошибка, скорее всего
-// TODO дело в том, что не используются те же объекты в App
-
-
-
 export const Menu = () => {
   return (
-    // не забыть сделать нормальную стилизацию (активня ссылка, и обычные слили для li и NavLink
     <StyledMenu>
       <ul>
         {menuItems.map((item) => (

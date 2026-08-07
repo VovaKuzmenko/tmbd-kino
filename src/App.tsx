@@ -43,12 +43,10 @@ function App() {
 
   return (
     <SkeletonTheme baseColor={baseColor} highlightColor={highlightColor}>
-      {/* Это основной блок - майн, на каждую кнопку должен быть свой */}
       <div className={styles.container}>
         <LinearProgress />
         <UniversalErrorNotification />
         <Header />
-        {/* main-оберткуа для прилипания  Header и Footer*/}
         <main className={styles.main}>
           <Routes>
             <Route path={PATHS.MAIN} element={<MenuMain
@@ -57,10 +55,8 @@ function App() {
             <Route path={PATHS.CATEGORY} element={<MenuCategoryMuvies rubrics={rubrics} />} />
             <Route path={PATHS.FILTERED} element={<MenuFilteredMovies />} />
             <Route path={PATHS.SEARCH} element={<MenuSearch />} />
-            {/* фильмы отмеченные -  с красным сердечком (любимые)  */}
             <Route path={PATHS.FAVORITES} element={<MenuFavorites />} />
             <Route path={PATHS.ERROR404} element={<Error404 />} />
-            {/* <Route path={PATHS.FILM_INFO} element={<FilmInfo />} /> */}
             <Route path="/film_info/:id" element={<FilmInfo />} />
             <Route path="*" element={<Error404 />} />
 

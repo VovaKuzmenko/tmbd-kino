@@ -10,7 +10,6 @@ h2{
 
 .StyledMain {
   position: relative;
-  /* адаптивная высота: min 280px, обычно 55% экрана, max 760px */
   min-height: clamp(280px, 55vh, 760px);
   overflow: hidden;
 
@@ -28,7 +27,7 @@ h2{
 .imageLayer img {
   width: 100%;
   height: 100%;
-  object-fit: cover;   /* заполняет блок без искажений */
+  object-fit: cover;   
   object-position: center;
   display: block;
 }

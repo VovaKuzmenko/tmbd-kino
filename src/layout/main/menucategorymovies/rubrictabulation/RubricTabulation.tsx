@@ -1,6 +1,5 @@
 import { Button } from "../../../../components/button/Button"
 import styles from './RubricTabulation.module.css'
-// import type { RubricItem } from "../../../components/types"
 import type { RubricItem } from "../../../../components/types"
 
 type RubricTabulationsProps = {
